@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 const Footer = () => {
-  const { theme } = useTheme();
+  const { theme } = useTheme(); // Use theme from context
 
   return (
-    <footer className={`${theme?.navbar} ${theme?.text}`}>
+    <footer className={`${theme?.background} ${theme?.text}`}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -24,7 +24,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   Products
                 </Link>
@@ -32,7 +32,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/about"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   About Us
                 </Link>
@@ -40,7 +40,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   Contact
                 </Link>
@@ -55,7 +55,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=cleansers"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   Cleansers
                 </Link>
@@ -63,7 +63,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=moisturizers"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   Moisturizers
                 </Link>
@@ -71,7 +71,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=serums"
-                  className={`${theme?.accent} hover:text-blue-500`}
+                  className={`${theme?.accent} hover:opacity-80`}
                 >
                   Serums
                 </Link>

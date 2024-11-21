@@ -17,6 +17,8 @@ export const themes = {
     hover: "hover:bg-gray-100",
     shadow: "shadow-md hover:shadow-xl",
     transition: "transition duration-300 ease-in-out",
+    outer_border:"#333333"
+
    
   },
   midnight: {
@@ -30,6 +32,7 @@ export const themes = {
     border: "border-gray-700",
     accent: "text-cyan-400",
     button: "bg-indigo-700 hover:bg-indigo-600",
+    outer_border:"text-gray-100"
   },
 };
 

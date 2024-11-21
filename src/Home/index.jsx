@@ -181,7 +181,7 @@ const Home = () => {
   };
 
   return (
-    <div className={`${theme?.background} ${theme?.text} min-h-screen rounded-[20px] mb-4 `}>
+    <div className={`${theme?.background} ${theme?.text} min-h-screen  mb-4 `}>
       <div className="px-4 md:px-8 lg:px-12 max-w-7xl mx-auto ">
         {/* Hero Section */}
        

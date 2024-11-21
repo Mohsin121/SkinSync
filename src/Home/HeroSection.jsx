@@ -1,9 +1,11 @@
 import { ChevronLeft, ChevronRight, Clock, Shield, ShoppingBag, Truck } from 'lucide-react';
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const theme = useTheme();
   const slides = [
     {
       title: 'Best Furniture Collection For Your Interior.',
@@ -92,13 +94,13 @@ const HeroSection = () => {
       
       <button
         onClick={prevSlide}
-        className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md transition-colors duration-300"
+        className={`absolute top-1/2 left-4 -translate-y-1/2 ${theme.background}/70  rounded-full p-2 shadow-md `}
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/70 hover:bg-white rounded-full p-2 shadow-md transition-colors duration-300"
+        className={`absolute top-1/2 right-4 -translate-y-1/2 ${theme.background}/70  rounded-full p-2 shadow-md `}
       >
         <ChevronRight className="w-6 h-6" />
       </button>
@@ -117,15 +119,15 @@ const HeroSection = () => {
     </div>
 
     {/* Features Section */}
-    <div className="bg-white rounded-xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+    <div className={`${theme.background} border-[${theme.outer_border}] rounded-xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4`}>
       {features.map((feature, index) => (
         <div key={index} className="flex items-center gap-4">
-          <div className="text-gray-600">
+          <div className={`${theme.text}`}>
             {feature.icon}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">{feature.title}</h3>
-            <p className="text-sm text-gray-500">{feature.description}</p>
+            <h3 className={`font-semibold ${theme.text}`}>{feature.title}</h3>
+            <p className={`text-sm ${theme.text}`}>{feature.description}</p>
           </div>
         </div>
       ))}
