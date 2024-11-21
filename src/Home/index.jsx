@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { ChevronLeft, ChevronRight, ShoppingCart, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, Star} from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
+import HeroSection from "./HeroSection";
 
 // Dummy product data
 const products = [
@@ -66,6 +67,9 @@ const recommendedProducts = [
   },
 ];
 
+
+
+
 const Home = () => {
   const { theme } = useTheme();
   const [filters, setFilters] = useState({
@@ -73,6 +77,8 @@ const Home = () => {
     priceRange: "",
   });
   const [carouselIndex, setCarouselIndex] = useState(0);
+ 
+
 
   const filteredProducts = products.filter(
     (product) =>
@@ -94,6 +100,7 @@ const Home = () => {
         return true;
     }
   }
+
 
   // Product Card Component
   const ProductCard = ({ product, variant = "default" }) => {
@@ -174,24 +181,11 @@ const Home = () => {
   };
 
   return (
-    <div className={`${theme?.background} ${theme?.text} min-h-screen pt-16`}>
-      <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className={`${theme?.background} ${theme?.text} min-h-screen rounded-[20px] mb-4 `}>
+      <div className="px-4 md:px-8 lg:px-12 max-w-7xl mx-auto ">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            Discover Your Skin's Potential
-          </h1>
-          <p className="text-xl mb-8">
-            Personalized skincare solutions for every skin type
-          </p>
-          <Link
-            to="/products"
-            className={`inline-block px-6 py-3 ${theme?.primary} text-white rounded-lg hover:opacity-90 transition duration-200`}
-          >
-            Explore Products
-          </Link>
-        </div>
-
+       
+           <HeroSection/>
         {/* Filters */}
         <div className="mb-8 flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Our Products</h2>

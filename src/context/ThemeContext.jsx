@@ -5,11 +5,11 @@ const ThemeContext = createContext();
 export const themes = {
   elegant: {
     name: "Elegant Minimalist",
-    background: "bg-gray-50",
+    background: "#f5f5f5",
     card: "bg-white",
     navbar: "bg-gray-100",
     primary: "bg-gray-800",
-    text: "text-gray-900",
+    text: "#333333",
     subtext: "text-gray-600",
     border: "border-gray-200",
     accent: "text-gray-700",
@@ -17,6 +17,7 @@ export const themes = {
     hover: "hover:bg-gray-100",
     shadow: "shadow-md hover:shadow-xl",
     transition: "transition duration-300 ease-in-out",
+   
   },
   midnight: {
     name: "Midnight Horizon",

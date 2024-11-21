@@ -11,7 +11,7 @@ const products = [
     brand: "SkinSync",
     price: 29.99,
     category: "Cleansers",
-    image: "/api/placeholder/300/400"
+    image: "https://picsum.photos/id/101/300/400",
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ const products = [
     brand: "Radiance",
     price: 45.5,
     category: "Serums",
-    image: "/api/placeholder/300/400"
+    image: "https://picsum.photos/id/102/300/400",
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ const products = [
     brand: "HydraGlow",
     price: 39.99,
     category: "Moisturizers",
-    image: "/api/placeholder/300/400"
+    image: "https://picsum.photos/id/103/300/400",
   },
   {
     id: 4,
@@ -35,11 +35,9 @@ const products = [
     brand: "PureSkin",
     price: 34.99,
     category: "Exfoliants",
-    image: "/api/placeholder/300/400"
+    image: "https://picsum.photos/id/104/300/400",
   },
-  // ... more products
 ];
-
 const Product = () => {
   const { theme } = useTheme();
   const [filters, setFilters] = useState({
