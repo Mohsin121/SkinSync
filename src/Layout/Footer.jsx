@@ -1,23 +1,18 @@
-// src/components/Footer.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 const Footer = () => {
-  const { darkMode } = useTheme();
+  const { theme } = useTheme();
 
   return (
-    <footer
-      className={`${
-        darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-100 text-gray-600"
-      }`}
-    >
+    <footer className={`${theme?.navbar} ${theme?.text}`}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">SkinSync</h3>
-            <p className="text-sm">
+            <p className={`${theme?.subtext} text-sm`}>
               Your trusted destination for skincare products.
             </p>
           </div>
@@ -27,17 +22,26 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/products" className="text-sm hover:text-blue-500">
+                <Link
+                  to="/products"
+                  className={`${theme?.accent} hover:text-blue-500`}
+                >
                   Products
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-sm hover:text-blue-500">
+                <Link
+                  to="/about"
+                  className={`${theme?.accent} hover:text-blue-500`}
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm hover:text-blue-500">
+                <Link
+                  to="/contact"
+                  className={`${theme?.accent} hover:text-blue-500`}
+                >
                   Contact
                 </Link>
               </li>
@@ -51,7 +55,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=cleansers"
-                  className="text-sm hover:text-blue-500"
+                  className={`${theme?.accent} hover:text-blue-500`}
                 >
                   Cleansers
                 </Link>
@@ -59,7 +63,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=moisturizers"
-                  className="text-sm hover:text-blue-500"
+                  className={`${theme?.accent} hover:text-blue-500`}
                 >
                   Moisturizers
                 </Link>
@@ -67,7 +71,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/products?category=serums"
-                  className="text-sm hover:text-blue-500"
+                  className={`${theme?.accent} hover:text-blue-500`}
                 >
                   Serums
                 </Link>
@@ -85,8 +89,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-700">
-          <p className="text-center text-sm">
+        <div className={`mt-8 pt-8 ${theme?.border}`}>
+          <p className={`${theme?.subtext} text-center text-sm`}>
             © {new Date().getFullYear()} SkinSync. All rights reserved.
           </p>
         </div>

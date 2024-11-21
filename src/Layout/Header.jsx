@@ -1,41 +1,92 @@
-// src/components/Navbar.js
-import { Sun, Moon, ShoppingCart, User } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ShoppingCart, Moon, Sun, User } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+
+import CartCanvas from '../components/CartCanvas';
+import SkinSyncLogo from '../components/SkinSyncLogo';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
-  const { darkMode, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartItems = useSelector((state) => state.cart.cartItems); // Get cart items from Redux
+
+  
+
 
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
-      } shadow-md`}
-    >
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0 flex items-center">
-            <h1 className="text-xl font-bold">SkinSync</h1>
-          </div>
+    <>
+      <header className={`
+        fixed top-0 left-0 right-0 z-30
+        ${theme?.background} ${theme?.text}
+        border-b ${theme?.border}
+        backdrop-blur-lg bg-opacity-90
+      `}>
+        <div className="container mx-auto px-4 h-16">
+          <div className="flex items-center justify-between h-full">
+            {/* Logo */}
+            <Link to="/" className="flex-shrink-0">
+              <SkinSyncLogo />
+            </Link>
 
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            {/* Navigation Links - Add your nav items here */}
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link to="/products" className="hover:opacity-80">Products</Link>
+              <Link to="/categories" className="hover:opacity-80">Categories</Link>
+              <Link to="/about" className="hover:opacity-80">About</Link>
+            </nav>
 
-            <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-              <ShoppingCart size={20} />
-            </button>
+            {/* Right side buttons */}
+            <div className="flex items-center space-x-4">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
+                aria-label="Toggle theme"
+              >
+                {theme?.name === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
 
-            <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-              <User size={20} />
-            </button>
+              {/* Cart Button */}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className={`${theme?.card} p-2 rounded-full hover:opacity-80 relative`}
+                aria-label="Open cart"
+              >
+                <ShoppingCart size={20} />
+                {cartItems.length > 0 && (
+                  <span className={`
+                    absolute -top-1 -right-1
+                    bg-red-500 text-white
+                    rounded-full text-xs
+                    w-5 h-5 flex items-center justify-center
+                    font-medium
+                  `}>
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
+
+              {/* User Account */}
+              <button
+                className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
+                aria-label="User account"
+              >
+                <User size={20} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </header>
+
+      {/* Cart Canvas */}
+      <CartCanvas 
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+      />
+    </>
   );
 };
 

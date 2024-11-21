@@ -24,6 +24,7 @@ import Home from "./Home";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import { ThemeProvider } from "./context/ThemeContext";
+import Product from "./pages/Product";
 
 function App() {
   // Dummy auth state - replace with your actual auth logic
@@ -44,8 +45,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Signup />} />
 
+
           <Route element={<UserLayout />}>
             <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Product />} />
 
             {/* Protected Routes */}
             {/* <Route
