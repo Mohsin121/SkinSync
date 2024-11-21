@@ -25,6 +25,9 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import { ThemeProvider } from "./context/ThemeContext";
 import Product from "./pages/Product";
+import ProductDetail from "./pages/Product/ProductDetail";
+import Profile from "./settings/Profile";
+import Orders from "./settings/Orders";
 
 function App() {
   // Dummy auth state - replace with your actual auth logic
@@ -49,6 +52,12 @@ function App() {
           <Route element={<UserLayout />}>
             <Route path="/" element={<Home />} />
           <Route path="/products" element={<Product />} />
+          <Route path="/detail" element={<ProductDetail />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<Orders />} />
+
+
+
 
             {/* Protected Routes */}
             {/* <Route

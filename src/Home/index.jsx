@@ -166,10 +166,10 @@ const Home = () => {
               `}
             >
               <ShoppingCart size={16} />
-              Add to Cart
+             
             </button>
             <Link
-              to={`/product/${product.id}`}
+              to={`detail`}
               className="text-sm underline hover:text-blue-600 transition"
             >
               Quick View

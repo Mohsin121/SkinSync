@@ -18,11 +18,11 @@ const CartCanvas = ({ isOpen, onClose }) => {
   );
 
   const CartItem = ({ item }) => (
-    <div className={`${theme?.card} rounded-lg p-4 mb-4 flex gap-4 items-center`}>
+    <div className={`${theme?.card} ${theme?.border} rounded-lg p-4 mb-4 flex gap-4 items-center`}>
       {/* Product Image */}
       <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
-        <img 
-          src={item.image || "/api/placeholder/80/80"} 
+        <img
+          src={item.image || "/api/placeholder/80/80"}
           alt={item.name}
           className="w-full h-full object-cover"
         />
@@ -32,11 +32,11 @@ const CartCanvas = ({ isOpen, onClose }) => {
       <div className="flex-grow min-w-0">
         <h4 className="font-medium text-sm mb-1 truncate">{item.name}</h4>
         <p className={`${theme?.subtext} text-xs mb-2`}>{item.brand}</p>
-        
+
         {/* Quantity Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button 
+            <button
               className={`${theme?.card} ${theme?.border} p-1 rounded hover:opacity-80`}
               aria-label="Decrease quantity"
               onClick={() =>
@@ -46,7 +46,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
               <Minus size={14} />
             </button>
             <span className="w-8 text-center text-sm">{item.quantity}</span>
-            <button 
+            <button
               className={`${theme?.card} ${theme?.border} p-1 rounded hover:opacity-80`}
               aria-label="Increase quantity"
               onClick={() =>
@@ -57,10 +57,10 @@ const CartCanvas = ({ isOpen, onClose }) => {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <span className={` font-medium`}>
+            <span className="font-medium">
               ${(item.price * item.quantity).toFixed(2)}
             </span>
-            <button 
+            <button
               className="text-red-500 hover:text-red-600 transition-colors"
               aria-label="Remove item"
               onClick={() => dispatch(removeFromCart(item.id))}
@@ -77,21 +77,20 @@ const CartCanvas = ({ isOpen, onClose }) => {
     <>
       {/* Overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={onClose}
         />
       )}
 
       {/* Cart Panel */}
-      <div className={` 
-        fixed right-0 top-0 h-full w-full sm:w-96 z-50 
-        transform transition-transform duration-300 ease-in-out 
-        ${isOpen ? 'translate-x-0' : 'translate-x-full'} 
-        ${theme?.background} ${theme?.text} 
-      `}>
+      <div
+        className={`fixed right-0 top-0 h-full w-full sm:w-96 z-50 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        } ${theme?.background} ${theme?.text}`}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className={`flex items-center justify-between p-4 ${theme?.border} border-b`}>
           <div className="flex items-center gap-2">
             <ShoppingBag size={20} />
             <h2 className="text-lg font-medium">Shopping Cart</h2>
@@ -99,7 +98,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
               ({cartItems.length} items)
             </span>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
             aria-label="Close cart"
@@ -109,7 +108,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
         </div>
 
         {/* Cart Content */}
-        <div className="h-[calc(100vh-180px)] overflow-y-auto p-4">
+        <div className="h-[calc(100vh-200px)] overflow-y-auto p-4">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <ShoppingBag size={48} className="opacity-20 mb-4" />
@@ -124,25 +123,14 @@ const CartCanvas = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer with Total and Checkout */}
-        <div className={` 
-          absolute bottom-0 left-0 right-0 
-          border-t border-gray-200 
-          p-4 space-y-4 
-          ${theme?.card} 
-        `}>
+        <div className={`absolute bottom-0 left-0 right-0 ${theme?.border} border-t p-4 space-y-4 ${theme?.card}`}>
           <div className="flex justify-between items-center">
             <span className="font-medium">Total</span>
-            <span className="text-xl font-semibold">
-              ${total.toFixed(2)}
-            </span>
+            <span className="text-xl font-semibold">${total.toFixed(2)}</span>
           </div>
-          <button className={` 
-            ${theme?.primary} text-white 
-            w-full py-3 rounded-lg 
-            font-medium 
-            transform transition-all duration-200 
-            hover:opacity-90 active:scale-[0.98] 
-          `}>
+          <button
+            className={`${theme?.primary} text-white w-full py-3 rounded-lg font-medium transform transition-all duration-200 hover:opacity-90 active:scale-[0.98]`}
+          >
             Proceed to Checkout
           </button>
         </div>

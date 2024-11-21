@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Moon, Sun, User } from 'lucide-react';
+import { ShoppingCart, Moon, Sun, User, ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 import CartCanvas from '../components/CartCanvas';
@@ -10,19 +10,21 @@ import { useSelector } from 'react-redux';
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems); // Get cart items from Redux
 
-  
-
+  const toggleProfileMenu = () => setIsProfileMenuOpen((prev) => !prev);
 
   return (
     <>
-      <header className={`
-        fixed top-0 left-0 right-0 z-30
-        ${theme?.background} ${theme?.text}
-        border-b ${theme?.border}
-        backdrop-blur-lg bg-opacity-90
-      `}>
+      <header
+        className={`
+          fixed top-0 left-0 right-0 z-30
+          ${theme?.background} ${theme?.text}
+          border-b ${theme?.border}
+          backdrop-blur-lg bg-opacity-90
+        `}
+      >
         <div className="container mx-auto px-4 h-16">
           <div className="flex items-center justify-between h-full">
             {/* Logo */}
@@ -32,13 +34,19 @@ const Header = () => {
 
             {/* Navigation Links - Add your nav items here */}
             <nav className="hidden md:flex items-center space-x-8">
-              <Link to="/products" className="hover:opacity-80">Products</Link>
-              <Link to="/categories" className="hover:opacity-80">Categories</Link>
-              <Link to="/about" className="hover:opacity-80">About</Link>
+              <Link to="/products" className="hover:opacity-80">
+                Products
+              </Link>
+              <Link to="/categories" className="hover:opacity-80">
+                Categories
+              </Link>
+              <Link to="/about" className="hover:opacity-80">
+                About
+              </Link>
             </nav>
 
             {/* Right side buttons */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 relative">
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -56,32 +64,70 @@ const Header = () => {
               >
                 <ShoppingCart size={20} />
                 {cartItems.length > 0 && (
-                  <span className={`
-                    absolute -top-1 -right-1
-                    bg-red-500 text-white
-                    rounded-full text-xs
-                    w-5 h-5 flex items-center justify-center
-                    font-medium
-                  `}>
+                  <span
+                    className={`
+                      absolute -top-1 -right-1
+                      bg-red-500 text-white
+                      rounded-full text-xs
+                      w-5 h-5 flex items-center justify-center
+                      font-medium
+                    `}
+                  >
                     {cartItems.length}
                   </span>
                 )}
               </button>
 
               {/* User Account */}
-              <button
-                className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
-                aria-label="User account"
-              >
-                <User size={20} />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={toggleProfileMenu}
+                  className={`${theme?.card} p-2 rounded-full hover:opacity-80 flex items-center`}
+                  aria-label="User account"
+                >
+                  <User size={20} />
+                  <ChevronDown className="ml-2" size={16} />
+                </button>
+
+                {/* Profile Menu */}
+                {isProfileMenuOpen && (
+                  <div
+                    className={`${theme?.card} ${theme?.border} absolute right-0 mt-2 py-2 w-48 rounded-lg shadow-lg z-50`}
+                  >
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                    >
+                      Orders
+                    </Link>
+                    <Link
+                      to="/settings"
+                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                    >
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => console.log('Logging out')}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Cart Canvas */}
-      <CartCanvas 
+      <CartCanvas
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
