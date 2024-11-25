@@ -1,248 +1,227 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ShoppingCart, Star } from 'lucide-react';
+import { Star, Filter, ShoppingCart, X, ArrowBigRight } from 'lucide-react';
+import { useDispatch } from 'react-redux';
 import { useTheme } from '../../context/ThemeContext';
+import { addToCart } from '../../redux/slices/cartSlice';
 
-// Dummy product data
-const products = [
-  {
-    id: 1,
-    name: "Hydrating Facial Cleanser",
-    brand: "SkinSync",
-    price: 29.99,
-    category: "Cleansers",
-    image: "https://picsum.photos/id/101/300/400",
-  },
-  {
-    id: 2,
-    name: "Vitamin C Serum",
-    brand: "Radiance",
-    price: 45.5,
-    category: "Serums",
-    image: "https://picsum.photos/id/102/300/400",
-  },
-  {
-    id: 3,
-    name: "Deep Moisture Cream",
-    brand: "HydraGlow",
-    price: 39.99,
-    category: "Moisturizers",
-    image: "https://picsum.photos/id/103/300/400",
-  },
-  {
-    id: 4,
-    name: "Gentle Exfoliating Scrub",
-    brand: "PureSkin",
-    price: 34.99,
-    category: "Exfoliants",
-    image: "https://picsum.photos/id/104/300/400",
-  },
-];
-const Product = () => {
+
+const ProductsPage = () => {
   const { theme } = useTheme();
-  const [filters, setFilters] = useState({
-    category: "",
-    priceRange: "",
-  });
-  const [sortBy, setSortBy] = useState("latest");
+  const dispatch = useDispatch();
+
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [priceRange, setPriceRange] = useState(200);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+
+  const products = [
+    {
+      id: 1,
+      name: 'Hydrating Facial Cleanser',
+      description: 'Gentle facial cleanser for all skin types',
+      price: 29.99,
+      category: 'women',
+      image: 'https://picsum.photos/id/101/600/400',
+    },
+    {
+      id: 2,
+      name: "Men's Beard Oil",
+      description: 'Nourishing beard oil for smooth grooming',
+      price: 24.5,
+      category: 'men',
+      image: 'https://picsum.photos/id/102/600/400',
+    },
+    {
+      id: 3,
+      name: 'Unisex Moisturizer',
+      description: 'All-day hydration for all skin types',
+      price: 34.99,
+      category: 'all',
+      image: 'https://picsum.photos/id/103/600/400',
+    },
+    {
+      id: 4,
+      name: "Women's Night Cream",
+      description: 'Rejuvenating night treatment',
+      price: 45.0,
+      category: 'women',
+      image: 'https://picsum.photos/id/104/600/400',
+    },
+    {
+      id: 5,
+      name: "Men's Face Wash",
+      description: 'Deep cleansing formula for men',
+      price: 19.99,
+      category: 'men',
+      image: 'https://picsum.photos/id/105/600/400',
+    },
+    {
+      id: 6,
+      name: 'Universal Sunscreen',
+      description: 'Broad spectrum protection',
+      price: 39.99,
+      category: 'all',
+      image: 'https://picsum.photos/id/106/600/400',
+    },
+  ];
 
   const filteredProducts = products.filter(
     (product) =>
-      (!filters.category || product.category === filters.category) &&
-      (!filters.priceRange ||
-        checkPriceRange(product.price, filters.priceRange))
+      (activeFilter === 'All' || product.category === activeFilter.toLowerCase()) &&
+      product.price <= priceRange
   );
 
-  function checkPriceRange(price, range) {
-    switch (range) {
-      case "0-25":
-        return price <= 25;
-      case "25-50":
-        return price > 25 && price <= 50;
-      case "50+":
-        return price > 50;
-      default:
-        return true;
-    }
-  }
-
-  const sortedProducts = filteredProducts.sort((a, b) => {
-    if (sortBy === "latest") return b.id - a.id;
-    if (sortBy === "price-low") return a.price - b.price;
-    if (sortBy === "price-high") return b.price - a.price;
-    return 0;
-  });
-
-  const ProductCard = ({ product }) => {
-    return (
-      <div
-        className={`
-          ${theme?.card} 
-          ${theme?.border}
-          rounded-xl 
-          overflow-hidden 
-          shadow-lg 
-          hover:shadow-2xl 
-          transition-all 
-          duration-300
-          group
-          relative
-        `}
-      >
-        <div className="relative overflow-hidden">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full  object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-          <div className="absolute top-3 right-3 bg-white/70 rounded-full p-2 shadow-md">
-            <Star
-              size={20}
-              className="text-yellow-500 fill-yellow-100 hover:fill-yellow-300 cursor-pointer"
-            />
-          </div>
-        </div>
-        <div className="p-4 space-y-2">
-          <div className="flex justify-between items-center">
-            <h3 className="font-bold text-lg truncate pr-2">{product.name}</h3>
-            <span className="font-semibold text-emerald-600">
-              ${product.price.toFixed(2)}
-            </span>
-          </div>
-          <p className={`${theme?.subtext} text-xs italic`}>{product.brand}</p>
-          <div className="flex justify-between items-center mt-3">
-            <button
-              className={`
-                ${theme?.primary} 
-                text-white 
-                px-4 
-                py-2 
-                rounded-lg 
-                flex 
-                items-center 
-                gap-2 
-                hover:opacity-90 
-                transition 
-                duration-200
-              `}
-            >
-              <ShoppingCart size={16} />
-              Add to Cart
-            </button>
-            <Link
-              to={`/detail`}
-              className="text-sm underline hover:text-blue-600 transition"
-            >
-              Quick View
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product));
   };
 
   return (
-    <div className={`${theme?.background} ${theme?.text} min-h-screen`}>
-      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Filters */}
-          <div className={`
-            col-span-1
-            ${theme?.card} 
-            ${theme?.border}
-            rounded-xl 
-            p-6
-          `}>
-            <h2 className="text-xl font-semibold mb-4">Filters</h2>
-            <div className="space-y-4">
-              {/* Category Filter */}
-              <div>
-                <h3 className="text-lg font-medium mb-2">Category</h3>
-                <select
-                  value={filters.category}
-                  onChange={(e) =>
-                    setFilters({ ...filters, category: e.target.value })
-                  }
-                  className={`
-                    ${theme?.card} 
-                    ${theme?.border}
-                    p-2 
-                    rounded-lg 
-                    w-full
-                  `}
-                >
-                  <option value="">All Categories</option>
-                  <option value="Cleansers">Cleansers</option>
-                  <option value="Serums">Serums</option>
-                  <option value="Moisturizers">Moisturizers</option>
-                  <option value="Exfoliants">Exfoliants</option>
-                </select>
-              </div>
+    <div className={`${theme.background} ${theme.text} min-h-screen p-8`}>
+      <div className="container mx-auto">
+        {/* Filter Section */}
+        <div className={`${theme.card} rounded-xl shadow-md p-4 mb-6 border ${theme.border}`}>
+  <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+    <div>
+      <h1 className="text-xl  fw-bolder">
+        Our Collection
+      </h1>
+    </div>
+    
+    <div className="flex items-center gap-3">
+  {/* Compact Category Filter */}
+  <div
+    className={`flex items-center ${
+      theme.name === 'Midnight Horizon' ? 'bg-gray-800' : 'bg-gray-100'
+    } rounded-full p-1 space-x-1`}
+  >
+    {['All', 'Men', 'Women'].map((filter) => (
+      <button
+        key={filter}
+        onClick={() => setActiveFilter(filter)}
+        className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+          activeFilter === filter
+            ? `${theme.primary} text-white`
+            : `${
+                theme.name === 'Midnight Horizon'
+                  ? 'bg-transparent text-gray-300 hover:bg-gray-700 hover:text-white'
+                  : 'bg-transparent text-gray-600 hover:bg-gray-200'
+              }`
+        }`}
+      >
+        {filter}
+      </button>
+    ))}
+  </div>
 
-              {/* Price Range Filter */}
-              <div>
-                <h3 className="text-lg font-medium mb-2">Price Range</h3>
-                <select
-                  value={filters.priceRange}
-                  onChange={(e) =>
-                    setFilters({ ...filters, priceRange: e.target.value })
-                  }
-                  className={`
-                    ${theme?.card} 
-                    ${theme?.border}
-                    p-2 
-                    rounded-lg 
-                    w-full
-                  `}
+  {/* Minimalist Price Filter */}
+  <div
+    className={`flex items-center ${
+      theme.name === 'Midnight Horizon' ? 'bg-gray-800' : 'bg-gray-100'
+    } rounded-lg px-3 py-1.5 space-x-2`}
+  >
+    <Filter
+      size={16}
+      className={`${
+        theme.name === 'Midnight Horizon' ? 'text-cyan-400' : 'text-purple-600'
+      } opacity-70`}
+    />
+    <input
+      type="range"
+      min="0"
+      max="200"
+      value={priceRange}
+      onChange={(e) => setPriceRange(Number(e.target.value))}
+      className={`w-24 h-1 ${
+        theme.name === 'Midnight Horizon' ? 'bg-gray-700' : 'bg-gray-200'
+      } rounded-full appearance-none 
+      [&::-webkit-slider-thumb]:appearance-none 
+      [&::-webkit-slider-thumb]:w-3 
+      [&::-webkit-slider-thumb]:h-3 
+      [&::-webkit-slider-thumb]:${
+        theme.name === 'Midnight Horizon' ? 'bg-cyan-400' : 'bg-purple-600'
+      } 
+      [&::-webkit-slider-thumb]:rounded-full`}
+    />
+    <span
+      className={`text-xs ${
+        theme.name === 'Midnight Horizon' ? 'text-gray-300' : 'text-gray-600'
+      }`}
+    >
+      ${priceRange}
+    </span>
+  </div>
+</div>
+
+  </div>
+</div>
+
+        {/* Products Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className={`${theme.card} ${theme.border} rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all`}
+            >
+              <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+              <div className="p-4">
+                <h2 className="text-lg font-semibold mb-2">{product.name}</h2>
+                <p className={`${theme.subtext} text-sm mb-4`}>{product.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-xl font-bold">${product.price}</span>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className={`${theme.primary} text-white px-4 py-2 rounded-lg flex items-center gap-2`}
+                  >
+                    <ShoppingCart size={16} /> Add
+                  </button>
+                  <Link
+                   to="/detail"
+                    className={`${theme.primary} text-white px-4 py-2 rounded-lg flex items-center gap-2`}
+                  >
+                    View Detail →
+                  </Link>
+                </div>
+                <button
+                  onClick={() => setQuickViewProduct(product)}
+                  className="text-sm underline hover:text-blue-600 transition mt-2"
                 >
-                  <option value="">All Prices</option>
-                  <option value="0-25">$0 - $25</option>
-                  <option value="25-50">$25 - $50</option>
-                  <option value="50+">$50+</option>
-                </select>
+                  Quick View
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* Products Grid */}
-          <div className="col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Sort By */}
-            <div className={`
-              col-span-3
-              ${theme?.card} 
-              ${theme?.border}
-              rounded-xl 
-              p-4 
-              flex 
-              items-center 
-              justify-end
-            `}>
-              <span className={`${theme?.subtext} mr-4`}>Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={`
-                  ${theme?.card} 
-                  ${theme?.border}
-                  p-2 
-                  rounded-lg 
-                `}
-              >
-                <option value="latest">Latest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-              </select>
-            </div>
-
-            {/* Product Cards */}
-            {sortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
+
+      {/* Quick View Modal */}
+      {quickViewProduct && (
+        <div
+          className={`fixed inset-0 bg-black/50 flex items-center justify-center z-50`}
+          onClick={() => setQuickViewProduct(null)}
+        >
+          <div
+            className={`${theme.card} rounded-xl shadow-lg p-8 w-full max-w-lg relative`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 bg-gray-200 rounded-full p-2"
+              onClick={() => setQuickViewProduct(null)}
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={quickViewProduct.image}
+              alt={quickViewProduct.name}
+              className="w-full h-64 object-cover rounded-xl mb-6"
+            />
+            <h3 className="text-2xl font-bold mb-2">{quickViewProduct.name}</h3>
+            <p className="text-sm mb-4">{quickViewProduct.description}</p>
+            <span className="text-xl font-bold text-emerald-600">${quickViewProduct.price.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Product;
+export default ProductsPage;

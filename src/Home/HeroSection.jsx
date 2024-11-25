@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, Clock, Shield, ShoppingBag, Truck } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 

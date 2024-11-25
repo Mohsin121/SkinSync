@@ -27,7 +27,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Product from "./pages/Product";
 import ProductDetail from "./pages/Product/ProductDetail";
 import Profile from "./settings/Profile";
-import Orders from "./settings/Orders";
+
 
 function App() {
   // Dummy auth state - replace with your actual auth logic

@@ -1,4 +1,3 @@
-// src/components/NotFound.jsx
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
@@ -7,8 +6,7 @@ const NotFound = () => {
   const { darkMode } = useTheme();
 
   return (
-    <div
-      className={`min-h-screen pt-16 flex items-center justify-center ${
+    <div className={`min-h-screen pt-16 flex items-center justify-center ${
         darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
