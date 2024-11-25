@@ -27,6 +27,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Product from "./pages/Product";
 import ProductDetail from "./pages/Product/ProductDetail";
 import Profile from "./settings/Profile";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
 
 
 function App() {
@@ -47,6 +49,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
 
           <Route element={<UserLayout />}>
