@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Moon, Sun, User, ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -8,12 +8,17 @@ import SkinSyncLogo from '../components/SkinSyncLogo';
 import { useSelector } from 'react-redux';
 
 const Header = () => {
+  const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems); // Get cart items from Redux
 
   const toggleProfileMenu = () => setIsProfileMenuOpen((prev) => !prev);
+
+const onLogout = () => {
+  navigate("/login")
+}
 
   return (
     <>
@@ -113,7 +118,7 @@ const Header = () => {
                       Settings
                     </Link>
                     <button
-                      onClick={() => console.log('Logging out')}
+                      onClick={() => onLogout()}
                       className="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:opacity-80"
                     >
                       Logout

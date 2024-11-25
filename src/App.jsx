@@ -46,7 +46,7 @@ function App() {
       <ThemeProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
 
 
           <Route element={<UserLayout />}>
