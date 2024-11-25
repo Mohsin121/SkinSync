@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -8,6 +10,7 @@ const ResetPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    navigate('/login')
     // Add your reset password logic here
     console.log("Reset Password:", formData);
   };
