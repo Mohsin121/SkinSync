@@ -42,8 +42,8 @@ const onLogout = () => {
               <Link to="/products" className="hover:opacity-80">
                 Products
               </Link>
-              <Link to="/categories" className="hover:opacity-80">
-                Categories
+              <Link to="/personalization" className="hover:opacity-80">
+              Style Personalization
               </Link>
               <Link to="/about" className="hover:opacity-80">
                 About
@@ -105,18 +105,8 @@ const onLogout = () => {
                     >
                       Profile
                     </Link>
-                    <Link
-                      to="/orders"
-                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
-                    >
-                      Orders
-                    </Link>
-                    <Link
-                      to="/settings"
-                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
-                    >
-                      Settings
-                    </Link>
+
+                           
                     <button
                       onClick={() => onLogout()}
                       className="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:opacity-80"

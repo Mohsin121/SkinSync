@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Star, ShoppingCart } from "lucide-react";
 import { addToCart } from "../../redux/slices/cartSlice";
 import { useTheme } from './../../context/ThemeContext';
+import { Link } from "react-router-dom";
 
 const ProductDetail = () => {
 
@@ -100,11 +101,12 @@ const ProductDetail = () => {
                 <ShoppingCart size={18} />
                 Add to Cart
               </button>
-              <button
+              <Link
+              to='/checkout'
                 className={`${theme.button} py-3 rounded-lg font-medium`}
               >
                 Buy Now
-              </button>
+              </Link>
             </div>
 
             {/* Product Features */}

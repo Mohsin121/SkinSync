@@ -29,6 +29,9 @@ import ProductDetail from "./pages/Product/ProductDetail";
 import Profile from "./settings/Profile";
 import ResetPassword from "./pages/Auth/ResetPassword";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import SkinToneSuggestion from "./pages/SkinToneSuggestion";
+import RecommendedProducts from "./pages/SkinToneSuggestion/Recommendations";
+import Checkout from "./pages/Checkout";
 
 
 function App() {
@@ -58,8 +61,13 @@ function App() {
             <Route path="/" element={<Home />} />
           <Route path="/products" element={<Product />} />
           <Route path="/detail" element={<ProductDetail />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/checkout" element={<Checkout />} />
 
+          <Route path="/profile" element={<Profile />} />
+          <Route path="personalization">
+  <Route index element={<SkinToneSuggestion />} />
+  <Route path="recommendations" element={<RecommendedProducts />} />
+</Route>
 
 
 
