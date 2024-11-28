@@ -185,7 +185,7 @@ const ProductsPage = () => {
                   onClick={() => setQuickViewProduct(product)}
                   className="text-sm underline hover:text-blue-600 transition mt-2"
                 >
-                  Quick View
+                  Detail
                 </button>
               </div>
             </div>
