@@ -36,8 +36,8 @@ const UserSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["active", "inactive", "pending"],
-      default: "pending",
+      enum: ["active", "block"],
+      default: "active",
     },
     
     hash: { type: String, default: null },
@@ -95,6 +95,8 @@ UserSchema.methods.toAuthJSON = function () {
     status: this.status,
 
     token: this.generateJWT(),
+    createdAt: this.createdAt,
+
   };
 };
 
@@ -106,6 +108,8 @@ UserSchema.methods.toJSON = function () {
     email: this.email,
     status: this.status,
     role: this.role,
+    createdAt: this.createdAt,
+
   };
 };
 

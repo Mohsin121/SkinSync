@@ -15,6 +15,68 @@ router.get("/context",auth.required, auth.user, (request, response) => {
   );
 });
 
+
+router.get("/users", async (request, response) => {
+
+  try {
+    const users= await User.find({});
+    console.log("users", users);
+    return ResponseHandler.ok(response, users);
+
+  } catch (error) {
+    console.log("Error:", error);
+    return ResponseHandler.badRequest(
+      response,
+      error.message || "Error fetching users"
+    );
+  }
+
+});
+
+router.get("/detail/:userId", async (request, response) => {
+
+  try {
+    const user= await User.findById(request.params.userId);
+    if (!user) {
+      return ResponseHandler.badRequest(response, "User not found");
+    }
+    return ResponseHandler.ok(response, user);
+  } catch (error) {
+    console.log("Error:", error);
+    return ResponseHandler.badRequest(
+      response,
+      error.message || "Error fetching users"
+    );
+  }
+
+});
+
+
+
+router.put("/status/:userId", async (request, response) => {
+
+  try {
+    const user= await User.findById(request.params.userId);
+    if (!user) {
+      return ResponseHandler.badRequest(response, "User not found");
+    }
+
+    user.status = request.body.status;
+    await user.save();
+    
+    return ResponseHandler.ok(response, user);
+
+  } catch (error) {
+    console.log("Error:", error);
+    return ResponseHandler.badRequest(
+      response,
+      error.message || "Error fetching users"
+    );
+  }
+
+});
+
+
 router.put(
   "/update-profile",
   auth.required,

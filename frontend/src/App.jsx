@@ -19,8 +19,14 @@ import ForgotPassword from "./pages/Auth/ForgotPassword";
 import SkinToneSuggestion from "./pages/SkinToneSuggestion";
 import RecommendedProducts from "./pages/SkinToneSuggestion/Recommendations";
 import Checkout from "./pages/Checkout";
-import { RefreshCcw } from "lucide-react";
 import LoadingSpinner from "./components/LoadingSpinner";
+import AdminLayout from "./components/AdminLayout";
+import Products from "./pages/Admin/Products";
+import OrdersList from "./pages/Admin/Orders";
+import Users from "./pages/Admin/Users";
+import AddProduct from "./pages/Admin/Products/AddProduct";
+import UserDetail from "./pages/Admin/Users/UserDetail";
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,6 +72,17 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="products" element={<Products />} />
+            <Route path="products/add" element={<AddProduct />} />
+            <Route path="orders" element={<OrdersList />} />
+            <Route path="users" element={<Users />} />
+            <Route path="users/detail/:userId" element={<UserDetail />} />
+
+      </Route>
 
           <Route element={<UserLayout />}>
             <Route path="/" element={<Home />} />
