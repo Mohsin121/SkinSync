@@ -29,6 +29,8 @@ import UserDetail from "./pages/Admin/Users/UserDetail";
 import AdminProductDetail from "./pages/Admin/Products/AdminProductDetails";
 import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
+import Dashboard from "./pages/Admin/Dashboard";
+
 
 
 function App() {
@@ -71,34 +73,33 @@ function App() {
     <Router>
       <ThemeProvider>
         <Routes>
+          {/* auth routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
       
-
+      {/* admin routes */}
           <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<Dashboard/>} />
             <Route path="products" element={<Products />} />
             <Route path="products/add" element={<AddProduct />} />
             <Route path="products/detail/:id" element={<AdminProductDetail />} />
             <Route path="products/edit/:id" element={<EditProduct />} />
-
-
             <Route path="orders" element={<OrdersList />} />
             <Route path="orders/detail" element={<OrderDetail />} />
-
             <Route path="users" element={<Users />} />
             <Route path="users/detail/:userId" element={<UserDetail />} />
-
       </Route>
 
+
+{/* user routes */}
           <Route element={<UserLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Product />} />
             <Route path="/detail" element={<ProductDetail />} />
             <Route path="/checkout" element={<Checkout />} />
-
             <Route
               path="/profile"
               element={
@@ -107,7 +108,6 @@ function App() {
                 // </ProtectedRoute>
               }
             />
-
             <Route path="/personalization">
               <Route index element={<SkinToneSuggestion />} />
               <Route path="recommendations" element={<RecommendedProducts />} />
