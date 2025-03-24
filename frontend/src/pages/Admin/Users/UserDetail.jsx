@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
 import { successToaster } from "../../../utils/swal";
+import UserOrders from "./UserOrders"; // Import the new Orders component
 
 const UserDetail = () => {
   const { userId } = useParams();
@@ -26,7 +27,7 @@ const UserDetail = () => {
     }
   };
 
-const changeUserStatus = async (currentStatus) => {
+  const changeUserStatus = async (currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'block' : 'active';
     try {
       const payload = { status: newStatus };
@@ -44,6 +45,12 @@ const changeUserStatus = async (currentStatus) => {
       : "bg-yellow-100 text-yellow-800";
   };
 
+  const getInitials = (name) => {
+    return name 
+      ? name.split(' ').map(word => word[0]).join('').toUpperCase() 
+      : '';
+  };
+
   if (loading) {
     return <p className="p-6 text-center">Loading user details...</p>;
   }
@@ -54,13 +61,16 @@ const changeUserStatus = async (currentStatus) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-      <button onClick={() => navigate(-1)} className="flex items-center mb-4 text-gray-600 hover:text-gray-900">
+      <button 
+        onClick={() => navigate(-1)} 
+        className="flex items-center mb-4 text-gray-600 hover:text-gray-900"
+      >
         <ArrowLeft size={20} className="mr-2" /> Back
       </button>
 
       <div className="flex items-center space-x-6">
         <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-3xl font-semibold text-gray-600">
-          
+          {getInitials(user?.fullName)}
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900">{user?.fullName}</h2>
@@ -80,13 +90,14 @@ const changeUserStatus = async (currentStatus) => {
         <button
           className="px-4 py-2 rounded-lg text-white text-sm font-medium"
           style={{ backgroundColor: user.status === "active" ? "#EAB308" : "#10B981" }}
-          onClick={()=>changeUserStatus(user.status)}
+          onClick={() => changeUserStatus(user.status)}
         >
           {user.status === "active" ? "Block User" : "Activate User"}
         </button>
       </div>
 
-      
+      {/* Add the Orders component */}
+      <UserOrders />
     </div>
   );
 };

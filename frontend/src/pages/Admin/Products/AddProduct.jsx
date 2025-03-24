@@ -1,207 +1,296 @@
-import React, { useState } from "react";
-import { Upload, X } from "lucide-react";
+import axios from "axios";
+import { useState } from "react";
+import { failureToaster, successToaster } from "../../../utils/swal";
+
+const skinTones = [
+  { id: 'FFDFC4', name: 'Very Light', hex: '#FFDFC4' },
+  { id: 'F0C8A0', name: 'Light', hex: '#F0C8A0' },
+  { id: 'D8B094', name: 'Medium Light', hex: '#D8B094' },
+  { id: 'BB9675', name: 'Medium', hex: '#BB9675' },
+  { id: '8E6B56', name: 'Medium Dark', hex: '#8E6B56' },
+  { id: '5F4238', name: 'Dark', hex: '#5F4238' },
+  { id: '3B2219', name: 'Very Dark', hex: '#3B2219' }
+];
+
+const defaultBody = {
+  productName: "",
+  price: "",
+  description: "",
+  category: "",
+  subcategory: "",
+  quantity: 0,
+  suggestedColors: [],
+  images: [],
+};
 
 const AddProduct = () => {
-  const [productData, setProductData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    subcategory: "",
-    stock: "",
-    color: "",
-  });
+  const [formData, setFormData] = useState(defaultBody);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
-  const [images, setImages] = useState([]);
-  const [errors, setErrors] = useState({});
+  const categoryOptions = {
+    Men: ["Shirts", "Trousers", "Shoes"],
+    Women: ["Dresses", "Handbags", "Perfumes"],
+    Accessories: ["Watches", "Sunglasses", "Belts"],
+  };
 
-  // Predefined colors for selection
-  const colors = [
-    "#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF",
-    "#FFFF00", "#FF00FF", "#00FFFF", "#808080", "#800000",
-  ];
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
 
-  // Image Upload Handler
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    if (files.length + images.length > 10) {
-      alert("You can only upload up to 10 images.");
+    if (name === "category") {
+      setSubcategories(categoryOptions[value] || []);
+      setFormData((prev) => ({ ...prev, subcategory: "" }));
+    }
+  };
+
+  const handleSkinToneToggle = (toneId) => {
+    setFormData(prev => {
+      const currentTones = prev.suggestedColors;
+      const newTones = currentTones.includes(toneId)
+        ? currentTones.filter(id => id !== toneId)
+        : [...currentTones, toneId];
+      return { ...prev, suggestedColors: newTones };
+    });
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 2) {
+      failureToaster("You can only upload up to 2 images");
       return;
     }
 
-    const newImages = files.map((file) => URL.createObjectURL(file));
-    setImages([...images, ...newImages]);
+    const newImages = [...formData.images];
+    const newPreviews = [...imagePreviews];
+
+    files.forEach(file => {
+      if (newImages.length < 2) {
+        newImages.push(file);
+        newPreviews.push(URL.createObjectURL(file));
+      }
+    });
+
+    setFormData({ ...formData, images: newImages });
+    setImagePreviews(newPreviews);
   };
 
-  // Remove Image
   const removeImage = (index) => {
-    const newImages = images.filter((_, i) => i !== index);
-    setImages(newImages);
+    const newImages = formData.images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    
+    setFormData({ ...formData, images: newImages });
+    setImagePreviews(newPreviews);
   };
 
-  // Input Change Handler
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Color Selection
-  const handleColorSelect = (color) => {
-    setProductData((prev) => ({ ...prev, color }));
-  };
-
-  // Form Validation
-  const validateForm = () => {
-    let newErrors = {};
-    if (!productData.name) newErrors.name = "Product name is required";
-    if (!productData.description) newErrors.description = "Description is required";
-    if (!productData.price) newErrors.price = "Price is required";
-    if (!productData.category) newErrors.category = "Category is required";
-    if (!productData.subcategory) newErrors.subcategory = "Subcategory is required";
-    if (!productData.stock) newErrors.stock = "Stock is required";
-    if (images.length < 3) newErrors.images = "At least 3 images are required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Submit Handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
 
-    console.log("Product Data:", productData);
-    console.log("Uploaded Images:", images);
-    alert("Product added successfully!");
+    if (formData.suggestedColors.length === 0) {
+      failureToaster("Please select at least one skin tone");
+      return;
+    }
+
+    if (formData.images.length === 0) {
+      failureToaster("Please upload at least one image");
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("productName", formData.productName);
+    formDataToSend.append("price", formData.price);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("category", formData.category);
+    formDataToSend.append("subcategory", formData.subcategory);
+    formDataToSend.append("quantity", formData.quantity);
+    formDataToSend.append("suggestedColors", JSON.stringify(formData.suggestedColors));
+    
+    // Append images as an array
+    formData.images.forEach((image) => {
+      formDataToSend.append("images", image); // Use the same key for multiple images
+    });
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/product",
+        formDataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setFormData(defaultBody);
+      setImagePreviews([]);
+      successToaster("Product Added Successfully!");
+    } catch (error) {
+      console.error("Error adding product:", error.response?.data || error.message);
+      failureToaster(error.response?.data?.message || "Error adding product");
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Product</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 py-8">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Add New Product</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Product Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-            <input
-              type="text"
-              name="name"
-              value={productData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500"
-              placeholder="Enter product name"
-            />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-          </div>
-
-          {/* Price */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={productData.price}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500"
-              placeholder="Enter price"
-            />
-            {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
-          </div>
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea
-            name="description"
-            value={productData.description}
-            onChange={handleChange}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500"
-            placeholder="Enter product description"
-          />
-          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-        </div>
-
-        {/* Category & Subcategory */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-            <select
-              name="category"
-              value={productData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Select Category</option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              <option value="Accessories">Accessories</option>
-            </select>
-            {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
-            <select
-              name="subcategory"
-              value={productData.subcategory}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Select Subcategory</option>
-              <option value="Perfumes">Perfumes</option>
-              <option value="Shoes">Shoes</option>
-            </select>
-            {errors.subcategory && <p className="text-red-500 text-sm">{errors.subcategory}</p>}
-          </div>
-        </div>
-
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
-          <input type="file" multiple accept="image/*" onChange={handleImageUpload} />
-          {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
-        </div>
-
-        {/* Image Preview */}
-        {images.length > 0 && (
-          <div className="grid grid-cols-8 gap-2 mt-4">
-            {images.map((src, index) => (
-              <div key={index} className="relative w-24 h-24">
-                <img src={src} alt={`preview-${index}`} className="w-full h-full rounded-lg object-cover" />
-                <button
-                  onClick={() => removeImage(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Color Picker */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Select Color (Optional)</label>
-          <div className="flex space-x-2">
-            {colors.map((color) => (
-              <button
-                key={color}
-                className="w-8 h-8 rounded-full border"
-                style={{ backgroundColor: color }}
-                onClick={() => handleColorSelect(color)}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Product Name</label>
+              <input
+                type="text"
+                name="productName"
+                value={formData.productName}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter product name"
+                required
               />
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Submit Button */}
-        <button type="submit" className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">
-          Add Product
-        </button>
-      </form>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Price ($)</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter price"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Quantity</label>
+              <input
+                type="number"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                min="0"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter quantity"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Category</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select Category</option>
+                {Object.keys(categoryOptions).map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold mb-2">Subcategory</label>
+              <select
+                name="subcategory"
+                value={formData.subcategory}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select Subcategory</option>
+                {subcategories.map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-gray-700 font-semibold mb-2">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter product description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-gray-700 font-semibold mb-2">Suggested Skin Tones</label>
+              <div className="flex flex-wrap gap-4 p-4 bg-gray-50 rounded-lg">
+                {skinTones.map((tone) => (
+                  <div key={tone.id} className="flex flex-col items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSkinToneToggle(tone.id)}
+                      className={`w-16 h-16 rounded-full border-4 transition-all ${
+                        formData.suggestedColors.includes(tone.id)
+                          ? 'border-blue-500 scale-110'
+                          : 'border-transparent hover:border-gray-300'
+                      }`}
+                      style={{ backgroundColor: tone.hex }}
+                      title={tone.name}
+                    />
+                    <span className="text-xs text-gray-600">{tone.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Upload Images (Max 2)
+              </label>
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-8">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-semibold text-lg"
+            >
+              Add Product
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

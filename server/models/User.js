@@ -30,9 +30,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["local", "google", "facebook"],
       default: "local",
     },
+
+
     verifyToken: { type: String, default: null },
     verifyTokenExpires: { type: Date, default: null },
-
 
     status: {
       type: String,
@@ -72,7 +73,7 @@ UserSchema.methods.generateJWT = function () {
   let today = new Date();
   let exp = new Date(today);
   exp.setDate(today.getDate() + 60);
-
+  
   return jwt.sign(
     {
       id: this._id,

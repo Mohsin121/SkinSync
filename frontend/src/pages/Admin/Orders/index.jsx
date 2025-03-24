@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, Filter } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const OrdersList = () => {
   const [orders, setOrders] = useState([
@@ -66,9 +67,9 @@ const OrdersList = () => {
                 </span>
               </td>
               <td className="p-4">
-                <button className="text-gray-600 hover:text-gray-900">
+                <Link to="detail" className="text-gray-600 hover:text-gray-900">
                   <Eye size={18} />
-                </button>
+                </Link>
               </td>
             </tr>
           ))}

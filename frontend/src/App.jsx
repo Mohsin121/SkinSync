@@ -26,6 +26,9 @@ import OrdersList from "./pages/Admin/Orders";
 import Users from "./pages/Admin/Users";
 import AddProduct from "./pages/Admin/Products/AddProduct";
 import UserDetail from "./pages/Admin/Users/UserDetail";
+import AdminProductDetail from "./pages/Admin/Products/AdminProductDetails";
+import EditProduct from "./pages/Admin/Products/EditProduct";
+import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 
 
 function App() {
@@ -78,7 +81,13 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="products" element={<Products />} />
             <Route path="products/add" element={<AddProduct />} />
+            <Route path="products/detail/:id" element={<AdminProductDetail />} />
+            <Route path="products/edit/:id" element={<EditProduct />} />
+
+
             <Route path="orders" element={<OrdersList />} />
+            <Route path="orders/detail" element={<OrderDetail />} />
+
             <Route path="users" element={<Users />} />
             <Route path="users/detail/:userId" element={<UserDetail />} />
 
@@ -93,9 +102,9 @@ function App() {
             <Route
               path="/profile"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <Profile  />
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
 

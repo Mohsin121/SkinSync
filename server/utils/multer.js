@@ -1,47 +1,35 @@
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const filePath = path.join(process.cwd(), "public", "uploads");
 
-if (!fs.existsSync(filePath)) {
-	fs.mkdirSync(filePath, { recursive: true });
+// Ensure uploads directory exists
+const uploadDir = path.join(process.cwd(), "public", "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+// Configure multer storage
 const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, filePath);
-	},
-	filename: function (req, file, cb) {
-		cb(null, file.fieldname + "-" + Date.now() + "-" + Math.random() * 100 + path.extname(file.originalname));
-	},
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 
-//init storage
-//single file to store
-imageUploader = multer({
-	storage: storage,
-	limits: { fileSize: 20 * 1000 * 1000 }, //200MB
-	fileFilter: function (req, file, cd) {
-		checkImageExtension(file, cd);
-	},
+const upload = multer({
+  storage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
+  fileFilter: (req, file, cb) => {
+    const filetypes = /png|jpeg|jpg/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      return cb(new Error("Error: File type not supported!"));
+    }
+  },
 });
-
-//file extension checking
-function checkImageExtension(file, cd) {
-	//declaring file types
-	const filetype = /png|jpeg|svg|jpg|/;
-	//extracting file extension
-	const extname = filetype.test(path.extname(file.originalname).toLowerCase());
-	//mapping mimetype
-	const mimetype = filetype.test(file.mimetype);
-
-	if (mimetype && extname) {
-		return cd(null, true);
-	} else {
-		return cd("Error: File type not supported!");
-	}
-}
-
-module.exports = {
-	imageUploader,
-};
+module.exports = { upload };
