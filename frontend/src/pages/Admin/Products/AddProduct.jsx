@@ -1,16 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
 import { failureToaster, successToaster } from "../../../utils/swal";
+import skinTones from "../../../constants/Skintones";
+import { categoryOptions } from "../../../constants/CategoriesOptions";
 
-const skinTones = [
-  { id: 'FFDFC4', name: 'Very Light', hex: '#FFDFC4' },
-  { id: 'F0C8A0', name: 'Light', hex: '#F0C8A0' },
-  { id: 'D8B094', name: 'Medium Light', hex: '#D8B094' },
-  { id: 'BB9675', name: 'Medium', hex: '#BB9675' },
-  { id: '8E6B56', name: 'Medium Dark', hex: '#8E6B56' },
-  { id: '5F4238', name: 'Dark', hex: '#5F4238' },
-  { id: '3B2219', name: 'Very Dark', hex: '#3B2219' }
-];
+
 
 const defaultBody = {
   productName: "",
@@ -27,12 +21,6 @@ const AddProduct = () => {
   const [formData, setFormData] = useState(defaultBody);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-
-  const categoryOptions = {
-    Men: ["Shirts", "Trousers", "Shoes"],
-    Women: ["Dresses", "Handbags", "Perfumes"],
-    Accessories: ["Watches", "Sunglasses", "Belts"],
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

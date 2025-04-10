@@ -3,8 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { removeFromCart, updateQuantity } from '../redux/slices/cartSlice';
 import { useTheme } from '../context/ThemeContext';
+import { useNavigate } from 'react-router-dom';
 
 const CartCanvas = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
   const { theme } = useTheme();
   const dispatch = useDispatch();
 
@@ -129,6 +131,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
             <span className="text-xl font-semibold">${total.toFixed(2)}</span>
           </div>
           <button
+          onClick={()=> navigate("/checkout")}
             className={`${theme?.primary} text-white w-full py-3 rounded-lg font-medium transform transition-all duration-200 hover:opacity-90 active:scale-[0.98]`}
           >
             Proceed to Checkout

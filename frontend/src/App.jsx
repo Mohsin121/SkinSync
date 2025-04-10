@@ -107,7 +107,7 @@ function App() {
           <Route path="detail/:id" element={<ProductDetail />} />
           </Route>
           
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="checkout" element={<Checkout />} />
           <Route
             path="/profile"
             element={
@@ -118,7 +118,7 @@ function App() {
           />
           <Route path="/personalization">
             <Route index element={<SkinToneSuggestion />} />
-            <Route path="recommendations" element={<RecommendedProducts />} />
+            <Route path="recommendations/:toneId" element={<RecommendedProducts />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

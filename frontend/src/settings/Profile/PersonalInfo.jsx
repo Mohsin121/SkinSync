@@ -3,16 +3,9 @@ import { Edit, Mail, Phone, User, Save, X } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import axios from 'axios';
 import { successToaster, failureToaster } from '../../utils/swal'; // Assuming this path for your toaster utils
+import skinTones from '../../constants/Skintones';
 
-// Comprehensive Skin Tone Options
-const SKIN_TONES = [
-  { id: 'fair', name: 'Fair', color: '#F5DEB3' },
-  { id: 'light-medium', name: 'Light Medium', color: '#D2B48C' },
-  { id: 'medium', name: 'Medium', color: '#8B4513' },
-  { id: 'olive', name: 'Olive', color: '#6B4423' },
-  { id: 'brown', name: 'Brown', color: '#5D4037' },
-  { id: 'dark', name: 'Dark', color: '#3D2B1F' }
-];
+
 
 const PersonalInfo = () => {
   const { currentTheme } = useTheme();
@@ -161,7 +154,7 @@ const PersonalInfo = () => {
             className="w-24 h-24 rounded-full flex items-center justify-center relative"
             style={{ 
               backgroundColor: formData.skinTone 
-                ? SKIN_TONES.find(tone => tone.id === formData.skinTone)?.color 
+                ? skinTones.find(tone => tone.id === formData.skinTone)?.hex 
                 : '#D3D3D3' 
             }}
           >
@@ -205,7 +198,7 @@ const PersonalInfo = () => {
           >
             <h4 className="text-md font-semibold mb-3">Select Your Skin Tone</h4>
             <div className="flex flex-wrap gap-3">
-              {SKIN_TONES.map((tone) => (
+              {skinTones.map((tone) => (
                 <button
                   key={tone.id}
                   onClick={() => handleSkinToneSelect(tone.id)}
@@ -216,7 +209,7 @@ const PersonalInfo = () => {
                       : 'border-transparent hover:border-gray-300'
                     } transition-all
                   `}
-                  style={{ backgroundColor: tone.color }}
+                  style={{ backgroundColor: tone.hex }}
                   aria-label={`Select ${tone.name} skin tone`}
                 >
                   {formData.skinTone === tone.id && (
@@ -240,7 +233,7 @@ const PersonalInfo = () => {
                 </span>
               </div>
               <p className="font-medium">
-                {SKIN_TONES.find(tone => tone.id === formData.skinTone)?.name || 'Not Selected'}
+                {skinTones.find(tone => tone.id === formData.skinTone)?.name || 'Not Selected'}
               </p>
             </div>
           )}

@@ -40,7 +40,6 @@ const ProductDetail = () => {
   const { id } = useParams();
   const { theme } = useTheme();
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.cartItems);
   const [selectedImage, setSelectedImage] = useState("");
   const [product, setProduct] = useState(null); // State to hold the product data
   const [loading, setLoading] = useState(true); // State for loading status
@@ -131,7 +130,7 @@ const ProductDetail = () => {
               </button>
               <Link
                 to="/checkout"
-                className={`${theme.button} py-3 rounded-lg font-medium`}
+                className={`${theme.button} text-center rounded-lg font-medium p-3`}
               >
                 Buy Now
               </Link>
@@ -139,19 +138,11 @@ const ProductDetail = () => {
 
             {/* Product Features */}
             <div>
-              <h2 className="text-lg font-semibold mb-4">Features</h2>
-              <ul className="space-y-2">
-                {fakeProduct.features.map((feature, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <h2 className="text-lg font-semibold mb-4">Description</h2>
+              
+                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full mx-2"></span>
+                    {product?.description}
+                            </div>
           </div>
         </div>
 

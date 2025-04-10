@@ -1,12 +1,16 @@
 import { Edit, MapPin, Save, X } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { failureToaster, successToaster } from '../../utils/swal';
+import axios from 'axios';
 
 const Address = () => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
+
+  const [isLoading, setIsLoading] = useState(false)
   const [address, setAddress] = useState({
-    line1: '123 Main St',
+    street: '123 Main St',
     city: 'Springfield',
     state: 'IL',
     zip: '62701',
@@ -19,6 +23,61 @@ const Address = () => {
       ...address,
       [e.target.name]: e.target.value,
     });
+  };
+
+
+    // Get user data from localStorage
+    useEffect(() => {
+      const userData = JSON.parse(localStorage.getItem("userInfo"));
+      if (userData) {
+        
+        setAddress({
+          state: userData?.state || '',
+          city: userData?.city || '',
+          street: userData?.street || '',
+          zip: userData?.zip || '',
+          country: userData?.country || ''
+
+        });
+      }
+    }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await axios.put('http://localhost:8000/api/user/update-address', address, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      
+      if (response.data.data) {
+        // Update localStorage with new data
+        const updatedUserInfo = { ...JSON.parse(localStorage.getItem("userInfo")), ...address };
+        localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+        
+        // Update state
+        setAddress({
+          fullName: address.fullName,
+          email: address.email,
+          phone: address.phone,
+          skinTone: address.skinTone
+        });
+        
+        // Show success message
+        successToaster('Address updated successfully');
+        
+        // Exit edit mode
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      failureToaster(error.response?.data?.message || 'Failed to update address');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,12 +107,12 @@ const Address = () => {
           <form className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Address Line 1
+                Street
               </label>
               <input
                 type="text"
-                name="line1"
-                value={address.line1}
+                name="street"
+                value={address.street}
                 onChange={handleChange}
                 className={`w-full px-4 py-2 rounded-lg ${
                   currentTheme === 'midnight'
@@ -127,7 +186,7 @@ const Address = () => {
 
             <button
               type="button"
-              onClick={() => setIsEditing(false)}
+              onClick={(e) => handleSubmit(e)}
               className={`mt-4 px-6 py-2 rounded-lg ${
                 currentTheme === 'midnight'
                   ? 'bg-cyan-500 hover:bg-cyan-400 text-white'
@@ -154,7 +213,7 @@ const Address = () => {
                     currentTheme === 'midnight' ? 'text-gray-400' : 'text-gray-600'
                   }`}
                 >
-                  {address.line1}, <br />
+                  {address.street} <br />
                   {address.city}, {address.state} {address.zip}, <br />
                   {address.country}
                 </p>

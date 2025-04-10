@@ -79,7 +79,7 @@ const HeroSection = () => {
                   {slide.discount} Discount
                 </span>
                 <Link
-                  to={slide.link}
+                  to="/products"
                   className={`px-6 py-2 rounded-full text-sm font-medium ${theme.button} transition-colors duration-300`}
                 >
                   Shop Now

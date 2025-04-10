@@ -110,6 +110,42 @@ router.put(
   }
 );
 
+
+router.put(
+  "/update-address",
+  auth.required,
+  auth.user,
+  async (request, response) => {
+    try {
+      const { street, state, city, zip, country } = request.body;
+      const userId = request.user._id;
+
+      // Find the user
+      const user = await User.findOne({ _id: userId });
+      if (!user) {
+        return ResponseHandler.badRequest(response, "User not found");
+      }
+
+      // Update user data
+      user.street = street || user.street;  
+      user.state = state || user.state;
+      user.zip = zip || user.zip;
+      user.city = city || user.city;
+      user.country = country || user.country;
+
+
+      // Save the updated user information
+      const updatedAddress = await user.save();
+
+      // Respond with the updated user data
+      return ResponseHandler.ok(response, updatedAddress, "Address updated successfully!");
+    } catch (err) {
+      console.log("Error: ", err);
+      return ResponseHandler.badRequest(response, err.message || "Error updating user address");
+    }
+  }
+);
+
 // Update user password
 router.put(
   "/update-password",

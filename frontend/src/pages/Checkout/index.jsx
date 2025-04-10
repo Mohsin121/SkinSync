@@ -1,336 +1,179 @@
-import React, { useState } from 'react';
+// Main Checkout Component
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, CreditCard, Box, Check, Plus, Trash2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import AddressSection from './AddressSection';
+import PaymentSection from './PaymentSection';
+import OrderSummary from './OrderSummary';
+import { Box } from 'lucide-react';
 
 const Checkout = () => {
-  const { theme } = useTheme(); // Access the current theme from context
+  const { theme } = useTheme();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const navigate = useNavigate();
 
-  // Mock addresses for design stage
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      fullName: 'John Doe',
-      street: '123 Main St',
-      city: 'Anytown',
-      state: 'CA',
-      zipCode: '12345',
-      country: 'United States',
-      isDefault: true
-    }
-  ]);
+  // State for addresses
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
-  const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [newAddress, setNewAddress] = useState({
-    fullName: '',
-    street: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: '',
-    isDefault: false
-  });
-
+  // Payment methods state
   const [paymentMethod, setPaymentMethod] = useState('cashOnDelivery');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expirationDate: '',
     cvv: ''
   });
-  
-  const navigate = useNavigate();
 
-  // Calculate total price of items in the cart
+  // Load user data on component mount
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = () => {
+    try {
+      const userInfoString = localStorage.getItem('userInfo');
+      if (userInfoString) {
+        const userInfo = JSON.parse(userInfoString);
+        
+        if (userInfo.addresses && userInfo.addresses.length > 0) {
+          setAddresses(userInfo.addresses);
+          
+          const defaultAddress = userInfo.addresses.find(addr => addr.isDefault);
+          setSelectedAddressId(defaultAddress ? defaultAddress.id : userInfo.addresses[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user information:', error);
+    }
+  };
+
+  // Calculate totals
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const shippingCost = totalPrice > 100 ? 0 : 10;
+  const taxAmount = totalPrice * 0.07; // 7% tax
+  const orderTotal = totalPrice + shippingCost + taxAmount;
 
-  // Handle new address submission
-  const handleAddAddress = () => {
-    if (Object.values(newAddress).some(field => field === '')) {
-      alert('Please fill in all address fields');
-      return;
-    }
-
-    const newAddressEntry = { ...newAddress, id: addresses.length + 1 };
-    setAddresses(prev => [...prev, newAddressEntry]);
-    setSelectedAddressId(newAddressEntry.id);
-    setIsEditingAddress(false);
-    setNewAddress({
-      fullName: '',
-      street: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: '',
-      isDefault: false
-    });
-  };
-
-  // Handle address selection
-  const handleSelectAddress = (id) => {
-    setSelectedAddressId(id);
-    setNewAddress(addresses.find(address => address.id === id));
-  };
-
-  // Delete an address
-  const handleDeleteAddress = (idToDelete) => {
-    const updatedAddresses = addresses.filter(addr => addr.id !== idToDelete);
-    setAddresses(updatedAddresses);
-
-    if (selectedAddressId === idToDelete) {
-      setSelectedAddressId(updatedAddresses.length > 0 ? updatedAddresses[0].id : null);
-      setNewAddress({
-        fullName: '',
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: '',
-        isDefault: false
-      });
+  // Update localStorage with new addresses
+  const updateLocalStorage = (updatedAddresses) => {
+    try {
+      const userInfoString = localStorage.getItem('userInfo');
+      let userInfo = userInfoString ? JSON.parse(userInfoString) : {};
+      userInfo.addresses = updatedAddresses;
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    } catch (error) {
+      console.error('Error updating user information:', error);
     }
   };
 
-  // Handle payment method change
+  // Handle address management
+  const handleAddressUpdate = (newAddresses, newSelectedId) => {
+    setAddresses(newAddresses);
+    setSelectedAddressId(newSelectedId);
+    updateLocalStorage(newAddresses);
+  };
+
+  // Handle payment method changes
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
     if (method !== 'creditCard') {
-      setCardDetails({ cardNumber: '', expirationDate: '', cvv: '' }); // Reset card details when switching to COD
+      setCardDetails({ cardNumber: '', expirationDate: '', cvv: '' });
     }
   };
 
-  // Handle credit card input changes
   const handleCardDetailsChange = (e) => {
     const { name, value } = e.target;
-    setCardDetails(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setCardDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle placing the order
+  // Handle order placement
   const handlePlaceOrder = () => {
-    const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-
-    if (!selectedAddress) {
+    // Validate requirements
+    if (!selectedAddressId) {
       alert('Please select or add a shipping address');
       return;
     }
 
-    if (paymentMethod === 'creditCard' && Object.values(cardDetails).some(field => field === '')) {
-      alert('Please complete your credit card details');
-      return;
+    if (paymentMethod === 'creditCard') {
+      const { cardNumber, expirationDate, cvv } = cardDetails;
+      if (!cardNumber.trim() || !expirationDate.trim() || !cvv.trim()) {
+        alert('Please complete all credit card fields');
+        return;
+      }
     }
 
-    // Proceed to order confirmation page
+    // Create order object
+    const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
+    const order = {
+      items: cartItems,
+      shippingAddress: selectedAddress,
+      paymentMethod,
+      cardDetails: paymentMethod === 'creditCard' ? cardDetails : null,
+      subtotal: totalPrice,
+      shipping: shippingCost,
+      tax: taxAmount,
+      total: orderTotal,
+      orderDate: new Date().toISOString()
+    };
+
+    // Save order to localStorage and navigate to confirmation
+    localStorage.setItem('latestOrder', JSON.stringify(order));
     navigate('/order-confirmation');
   };
 
   return (
-    <div className={`${theme.background} min-h-screen py-12 px-6 lg:px-16`}>
+    <div className={`${theme.background} min-h-screen py-12 px-4 md:px-6 lg:px-16`}>
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Checkout Container */}
-        <div className={`${theme.card} shadow-xl rounded-xl overflow-hidden`}>
-          
-          {/* Checkout Header */}
-          <div className={`${theme.primary} p-8 text-white`}>
-            <h1 className="text-3xl font-bold flex items-center">
-              <Box className="mr-4" size={32} />
-              Checkout
-            </h1>
+        {/* Mobile Order Summary */}
+        <div className="md:hidden mb-6">
+          <div className={`${theme.card} shadow-lg rounded-xl p-6`}>
+            <h2 className="text-xl font-semibold mb-4">Order Summary ({cartItems.length} items)</h2>
+            <p className="font-medium">Total: ${orderTotal.toFixed(2)}</p>
           </div>
+        </div>
 
-          {/* Shipping Address Section */}
-          <div className={`${theme.card} p-8 border-b`}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold flex items-center">
-                <MapPin className={`mr-3 ${theme.accent}`} />
-                Shipping Address
-              </h2>
-              <button
-                onClick={() => setIsEditingAddress(!isEditingAddress)}
-                className={`${theme.button} text-lg px-4 py-2 rounded-lg`}
-              >
-                {isEditingAddress ? 'Cancel Edit' : 'Edit Address'}
-              </button>
+        {/* Main Checkout Container */}
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left Column - Customer Information */}
+          <div className="md:w-2/3">
+            {/* Checkout Header */}
+            <div className={`${theme.card} shadow-lg rounded-t-xl p-6 border-b ${theme.border}`}>
+              <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+                <Box className="mr-3" size={24} />
+                Checkout
+              </h1>
             </div>
 
-            {/* Address Selection */}
-            {!isEditingAddress ? (
-              <div className="mb-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  {addresses.map((address) => (
-                    <div
-                      key={address.id}
-                      className={`border-2 p-6 rounded-lg cursor-pointer relative transition-all duration-300
-                        ${selectedAddressId === address.id
-                          ? `border-${theme.primary} ${theme.card} shadow-lg`
-                          : `border-${theme.border} hover:border-${theme.primary}`}
-                      `}
-                      onClick={() => handleSelectAddress(address.id)}
-                    >
-                      {selectedAddressId === address.id && (
-                        <Check className="absolute top-2 right-2 text-green-600" />
-                      )}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteAddress(address.id);
-                        }}
-                        className="absolute top-2 left-2 text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                      <p className="font-medium">{address.fullName}</p>
-                      <p>{address.street}</p>
-                      <p>{`${address.city}, ${address.state} ${address.zipCode}`}</p>
-                      <p>{address.country}</p>
-                      {address.isDefault && (
-                        <span className="text-xs text-gray-600 mt-2 block">Default Address</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              // New Address Form (when editing or adding address)
-              <div className={`${theme.background} p-6 rounded-lg mb-6`}>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {['fullName', 'street', 'city', 'state', 'zipCode', 'country'].map((field) => (
-                    <input
-                      key={field}
-                      name={field}
-                      placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                      value={newAddress[field]}
-                      onChange={(e) => {
-                        const { name, value } = e.target;
-                        setNewAddress(prev => ({ ...prev, [name]: value }));
-                      }}
-                      className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-gray-500"
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-end space-x-4 mt-6">
-                  <button
-                    onClick={() => setIsEditingAddress(false)}
-                    className={`${theme.text} hover:${theme.hover}`}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddAddress}
-                    className={`${theme.button} px-6 py-3 rounded-lg`}
-                  >
-                    Save Address
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Address Section */}
+            <AddressSection 
+              addresses={addresses}
+              selectedAddressId={selectedAddressId}
+              theme={theme}
+              onAddressUpdate={handleAddressUpdate}
+            />
+
+            {/* Payment Method Section */}
+            <PaymentSection 
+              theme={theme}
+              paymentMethod={paymentMethod}
+              cardDetails={cardDetails}
+              onPaymentMethodChange={handlePaymentMethodChange}
+              onCardDetailsChange={handleCardDetailsChange}
+            />
           </div>
 
-          {/* Payment Method Section */}
-          <div className={`${theme.card} p-8 border-b`}>
-            <h2 className="text-xl font-semibold mb-6 flex items-center">
-              <CreditCard className={`mr-3 ${theme.accent}`} />
-              Payment Method
-            </h2>
-
-            <div className="space-y-4">
-              {/* Payment options */}
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="cashOnDelivery"
-                  name="paymentMethod"
-                  value="cashOnDelivery"
-                  checked={paymentMethod === 'cashOnDelivery'}
-                  onChange={() => handlePaymentMethodChange('cashOnDelivery')}
-                  className="mr-4"
-                />
-                <label htmlFor="cashOnDelivery" className="text-lg">
-                  Cash on Delivery
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="creditCard"
-                  name="paymentMethod"
-                  value="creditCard"
-                  checked={paymentMethod === 'creditCard'}
-                  onChange={() => handlePaymentMethodChange('creditCard')}
-                  className="mr-4"
-                />
-                <label htmlFor="creditCard" className="text-lg">
-                  Credit Card
-                </label>
-              </div>
-
-              {/* Credit Card Details */}
-              {paymentMethod === 'creditCard' && (
-                <div className="mt-4 space-y-4">
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    placeholder="Card Number"
-                    value={cardDetails.cardNumber}
-                    onChange={handleCardDetailsChange}
-                    className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-gray-500"
-                  />
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <input
-                      type="text"
-                      name="expirationDate"
-                      placeholder="MM/YY"
-                      value={cardDetails.expirationDate}
-                      onChange={handleCardDetailsChange}
-                      className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-gray-500"
-                    />
-                    <input
-                      type="text"
-                      name="cvv"
-                      placeholder="CVV"
-                      value={cardDetails.cvv}
-                      onChange={handleCardDetailsChange}
-                      className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-gray-500"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Order Summary Section */}
-          <div className={`${theme.card} p-8`}>
-            <h2 className="text-xl font-semibold mb-6 flex items-center">
-              <Box className="mr-3" />
-              Order Summary
-            </h2>
-            <div className="space-y-4 mb-6">
-              {cartItems.map((item, index) => (
-                <div key={index} className="flex justify-between">
-                  <span>{item.name}</span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between">
-              <span className="font-semibold text-xl">Total</span>
-              <span className="text-xl">${totalPrice.toFixed(2)}</span>
-            </div>
-          </div>
-
-          {/* Place Order Button */}
-          <div className="mt-8 text-end p-3">
-            <button
-              onClick={handlePlaceOrder}
-              className={`${theme.button} text-lg py-3 px-6 rounded-lg`}
-            >
-              Place Order
-            </button>
+          {/* Right Column - Order Summary */}
+          <div className="md:w-1/3">
+            <OrderSummary 
+              cartItems={cartItems}
+              totalPrice={totalPrice}
+              shippingCost={shippingCost}
+              taxAmount={taxAmount}
+              orderTotal={orderTotal}
+              theme={theme}
+              canOrder={!!selectedAddressId}
+              onPlaceOrder={handlePlaceOrder}
+            />
           </div>
         </div>
       </div>

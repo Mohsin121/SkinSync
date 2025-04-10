@@ -33,6 +33,8 @@ const UserSchema = new mongoose.Schema(
 
 
     verifyToken: { type: String, default: null },
+    skinTone: { type: String, default: "BB9675" },
+
     verifyTokenExpires: { type: Date, default: null },
 
     status: {
@@ -42,12 +44,14 @@ const UserSchema = new mongoose.Schema(
     },
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],  // Reference to orders made by the user
 
-    shippingAddress: {
+   
       street: { type: String },
       city: { type: String },
-      postalCode: { type: String },
-      country: { type: String }
-    },
+      state: { type: String },
+
+      zip: { type: String },
+      country: { type: String },
+    
 
     role: {
       type: String,
@@ -109,7 +113,11 @@ UserSchema.methods.toAuthJSON = function () {
     otp: this.otp,
     status: this.status,
     role: this.role,
-
+    street: this.street,
+    state: this.state,
+    city: this.city,
+    zip: this.zip,
+    country: this.country,
     token: this.generateJWT(),
     createdAt: this.createdAt,
 
@@ -125,8 +133,11 @@ UserSchema.methods.toJSON = function () {
     status: this.status,
     role: this.role,
     orders: this.orders,
-    shippingAddress: this.shippingAddress,
-
+    street: this.street,
+    state: this.state,
+    city: this.city,
+    zip: this.zip,
+    country: this.country,
     createdAt: this.createdAt,
 
   };
