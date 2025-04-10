@@ -10,6 +10,7 @@ const getTokenFromHeader = (request) => {
 	return null;
 };
 
+// Middleware to check if the user is authenticated
 const required = async (request, response, next) => {
 	const token = getTokenFromHeader(request);
 
@@ -18,6 +19,7 @@ const required = async (request, response, next) => {
 	}
 
 	try {
+		// Verify the token
 		const payload = jwt.verify(token, config.secret);
 		request.body.payload = { id: payload.id };
 		return next();
@@ -26,17 +28,31 @@ const required = async (request, response, next) => {
 	}
 };
 
+// Middleware to check if the user exists
 const user = async (request, response, next) => {
 	const { id } = request.body.payload;
-	const user = await User.findById(id)
+	const user = await User.findById(id);
 	if (!user) return ResponseHandler.badRequest(response, "User not found!");
 	request.user = user;
 	return next();
 };
 
+// Middleware to check if the user is an admin
+const admin = async (request, response, next) => {
+	const { id } = request.body.payload;
+	const admin = await User.findById(id);
 
+	// Check if the user exists and if they have an admin role
+	if (!admin) return ResponseHandler.badRequest(response, "User not found!");
+	if (admin.role !== "admin") {
+		return ResponseHandler.unauthorized(response, "You are not authorized to access this resource.");
+	}
+	request.user = admin;
+	return next();
+};
 
 module.exports = {
 	required,
 	user,
+	admin, // Export the admin middleware
 };

@@ -35,9 +35,7 @@ const Products = () => {
           <Link to="/admin/products/add" className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">  
             <Plus size={20} className="mr-2" /> Add Product
           </Link>
-          <button className="flex items-center border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100">
-            <Filter size={20} className="mr-2" /> Filters
-          </button>
+         
         </div>
       </div>
 

@@ -1,8 +1,6 @@
-// src/App.jsx
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
 
 import "./App.css";
 import NotFound from "./components/NotFound";
@@ -31,93 +29,101 @@ import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 import Dashboard from "./pages/Admin/Dashboard";
 
-
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const verifyUser = async () => {
-      const token = localStorage.getItem("token");
-      console.log("token", token)
-      if (!token) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return;
-      }
-      try {
-        const { data } = await axios.get("http://localhost:8000/api/user/context", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        localStorage.setItem("userInfo", JSON.stringify(data.data));
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Authentication error:", error);
-        localStorage.removeItem("token");
-        localStorage.removeItem("userInfo");
-        setIsAuthenticated(false);
+  const verifyUser = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:8000/api/user/context", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data.data));
+      setUser(data.data);
+      setIsAuthenticated(true);
+      if (data.data.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
       }
       setLoading(false);
-    };
-    verifyUser();
-  }, []);
 
-  const ProtectedRoute = ({ children }) => {
-    if (loading) return <LoadingSpinner />; // Show a loader while checking auth status
+    } catch (error) {
+      console.error("Authentication error:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      setIsAuthenticated(false);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!token) {
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+    verifyUser();
+  }, [token]);
+
+  const ProtectedRoute = ({ children, role }) => {
+    if (loading) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
+    if (role && user.role !== role) return <Navigate to="/" replace />;
     return children;
   };
 
   return (
-    <Router>
-      <ThemeProvider>
-        <Routes>
-          {/* auth routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+    <ThemeProvider>
+      <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      
-      {/* admin routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<Dashboard/>} />
-            <Route path="products" element={<Products />} />
-            <Route path="products/add" element={<AddProduct />} />
-            <Route path="products/detail/:id" element={<AdminProductDetail />} />
-            <Route path="products/edit/:id" element={<EditProduct />} />
-            <Route path="orders" element={<OrdersList />} />
-            <Route path="orders/detail" element={<OrderDetail />} />
-            <Route path="users" element={<Users />} />
-            <Route path="users/detail/:userId" element={<UserDetail />} />
-      </Route>
+        {/* Admin Routes */}
+        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<Products />} />
+          <Route path="products/add" element={<AddProduct />} />
+          <Route path="products/detail/:id" element={<AdminProductDetail />} />
+          <Route path="products/edit/:id" element={<EditProduct />} />
+          <Route path="orders" element={<OrdersList />} />
+          <Route path="orders/detail" element={<OrderDetail />} />
+          <Route path="users" element={<Users />} />
+          <Route path="users/detail/:userId" element={<UserDetail />} />
+        </Route>
 
-
-{/* user routes */}
-          <Route element={<UserLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Product />} />
-            <Route path="/detail" element={<ProductDetail />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route
-              path="/profile"
-              element={
-                // <ProtectedRoute>
-                  <Profile  />
-                // </ProtectedRoute>
-              }
-            />
-            <Route path="/personalization">
-              <Route index element={<SkinToneSuggestion />} />
-              <Route path="recommendations" element={<RecommendedProducts />} />
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
+        {/* User Routes */}
+        <Route element={<UserLayout />}>
+          <Route path="/" element={<Home />} />
+          
+          <Route path="products">
+          <Route path="" element={<Product />} />
+          <Route path="detail/:id" element={<ProductDetail />} />
           </Route>
-        </Routes>
-      </ThemeProvider>
-    </Router>
+          
+          <Route path="/checkout" element={<Checkout />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/personalization">
+            <Route index element={<SkinToneSuggestion />} />
+            <Route path="recommendations" element={<RecommendedProducts />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </ThemeProvider>
   );
 }
 

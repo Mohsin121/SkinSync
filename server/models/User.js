@@ -40,6 +40,12 @@ const UserSchema = new mongoose.Schema(
       enum: ["active", "block"],
       default: "active",
     },
+
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
     
     hash: { type: String, default: null },
     salt: { type: String, default: null },
@@ -94,6 +100,7 @@ UserSchema.methods.toAuthJSON = function () {
     authType: this.authType,
     otp: this.otp,
     status: this.status,
+    role: this.role,
 
     token: this.generateJWT(),
     createdAt: this.createdAt,

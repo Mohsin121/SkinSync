@@ -39,7 +39,7 @@ const AdminProductDetail = () => {
   if (error) return <div className="text-red-500 text-center mt-5">Error: {error}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-5">
+    <div className="w-100 mx-auto p-5">
       <button onClick={() => navigate("/admin/products")} className="flex items-center text-gray-600 hover:text-gray-900 mb-5">
         <ArrowLeft className="mr-2" size={18} /> Back to Products
       </button>
@@ -66,7 +66,7 @@ const AdminProductDetail = () => {
           <div className="flex gap-3 overflow-x-auto">
             {product.images?.length > 0 ? (
               product.images.map((image, index) => (
-                <img key={index} src={image} alt={`Product ${index}`} className="w-32 h-32 object-cover rounded-md shadow-md" />
+                <img key={index} src={image} alt={`Product ${index}`} className="w-full h-40 object-cover rounded-md shadow-md" />
               ))
             ) : (
               <p className="text-gray-500">No images available</p>
