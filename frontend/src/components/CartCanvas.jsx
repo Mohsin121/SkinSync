@@ -22,7 +22,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
       {/* Product Image */}
       <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
         <img
-          src={item.image || "/api/placeholder/80/80"}
+          src={item.images[0] || "/api/placeholder/80/80"}
           alt={item.name}
           className="w-full h-full object-cover"
         />
@@ -40,7 +40,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
               className={`${theme?.card} ${theme?.border} p-1 rounded hover:opacity-80`}
               aria-label="Decrease quantity"
               onClick={() =>
-                dispatch(updateQuantity({ productId: item.id, newQuantity: Math.max(item.quantity - 1, 1) }))
+                dispatch(updateQuantity({ productId: item._id, newQuantity: Math.max(item.quantity - 1, 1) }))
               }
             >
               <Minus size={14} />
@@ -50,7 +50,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
               className={`${theme?.card} ${theme?.border} p-1 rounded hover:opacity-80`}
               aria-label="Increase quantity"
               onClick={() =>
-                dispatch(updateQuantity({ productId: item.id, newQuantity: item.quantity + 1 }))
+                dispatch(updateQuantity({ productId: item._id, newQuantity: item.quantity + 1 }))
               }
             >
               <Plus size={14} />
@@ -63,7 +63,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
             <button
               className="text-red-500 hover:text-red-600 transition-colors"
               aria-label="Remove item"
-              onClick={() => dispatch(removeFromCart(item.id))}
+              onClick={() => dispatch(removeFromCart(item._id))}
             >
               <Trash2 size={16} />
             </button>
@@ -118,7 +118,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
               </p>
             </div>
           ) : (
-            cartItems.map((item) => <CartItem key={item.id} item={item} />)
+            cartItems.map((item) => <CartItem key={item._id} item={item} />)
           )}
         </div>
 

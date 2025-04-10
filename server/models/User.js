@@ -40,6 +40,14 @@ const UserSchema = new mongoose.Schema(
       enum: ["active", "block"],
       default: "active",
     },
+    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],  // Reference to orders made by the user
+
+    shippingAddress: {
+      street: { type: String },
+      city: { type: String },
+      postalCode: { type: String },
+      country: { type: String }
+    },
 
     role: {
       type: String,
@@ -116,6 +124,9 @@ UserSchema.methods.toJSON = function () {
     email: this.email,
     status: this.status,
     role: this.role,
+    orders: this.orders,
+    shippingAddress: this.shippingAddress,
+
     createdAt: this.createdAt,
 
   };
