@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
 const uniqueValidator = require("mongoose-unique-validator");
 const config = require("../config");
 
@@ -42,8 +41,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["active", "block"],
       default: "active",
     },
-    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],  // Reference to orders made by the user
-
    
       street: { type: String },
       city: { type: String },
@@ -66,7 +63,6 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.plugin(uniqueValidator, { message: "Taken" });
-UserSchema.plugin(mongoosePaginate);
 
 UserSchema.methods.validPassword = function (password) {
   let hash = crypto
@@ -132,7 +128,6 @@ UserSchema.methods.toJSON = function () {
     email: this.email,
     status: this.status,
     role: this.role,
-    orders: this.orders,
     street: this.street,
     state: this.state,
     city: this.city,
