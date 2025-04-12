@@ -23,8 +23,8 @@ const PaymentSection = ({
             <input
               type="radio"
               name="paymentMethod"
-              checked={paymentMethod === 'cashOnDelivery'}
-              onChange={() => onPaymentMethodChange('cashOnDelivery')}
+              checked={paymentMethod === 'cash'}
+              onChange={() => onPaymentMethodChange('cash')}
               className="mr-3"
             />
             <div>
@@ -40,8 +40,8 @@ const PaymentSection = ({
             <input
               type="radio"
               name="paymentMethod"
-              checked={paymentMethod === 'creditCard'}
-              onChange={() => onPaymentMethodChange('creditCard')}
+              checked={paymentMethod === 'card'}
+              onChange={() => onPaymentMethodChange('card')}
               className="mr-3"
             />
             <div>
@@ -51,7 +51,7 @@ const PaymentSection = ({
           </label>
 
           {/* Credit Card Details */}
-          {paymentMethod === 'creditCard' && (
+          {paymentMethod === 'card' && (
             <div className="p-4 pt-0 border-t border-gray-100 dark:border-gray-800">
               <div className="space-y-4">
                 <div className="space-y-1">

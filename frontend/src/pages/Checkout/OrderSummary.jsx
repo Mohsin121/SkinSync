@@ -46,10 +46,7 @@ const OrderSummary = ({
             <span className="text-gray-600 dark:text-gray-400">Shipping</span>
             <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : 'Free'}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Tax (7%)</span>
-            <span>${taxAmount.toFixed(2)}</span>
-          </div>
+          
           <div className="flex justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
             <span className="font-bold">Total</span>
             <span className="font-bold">${orderTotal.toFixed(2)}</span>

@@ -6,37 +6,7 @@ import { useTheme } from './../../context/ThemeContext';
 import { Link, useParams } from "react-router-dom";
 import axios from 'axios'; // Make sure you have axios installed
 
-
-const fakeProduct = {
-  name: "Hydrating Facial Cleanser",
-  description:
-    "A gentle facial cleanser that hydrates and soothes the skin, suitable for all skin types.",
-  price: 29.99,
-  images: [
-    "https://picsum.photos/id/101/600/400",
-    "https://picsum.photos/id/102/600/400",
-    "https://picsum.photos/id/103/600/400",
-  ],
-  features: [
-    "Hydrates and soothes the skin",
-    "Gentle formula suitable for all skin types",
-    "Dermatologically tested",
-  ],
-  reviews: [
-    {
-      name: "Jane Doe",
-      rating: 5,
-      comment: "Amazing product! My skin feels so soft and hydrated.",
-    },
-    {
-      name: "John Smith",
-      rating: 4,
-      comment: "Really good cleanser, but a bit pricey.",
-    },
-  ],
-};
 const ProductDetail = () => {
-
   const { id } = useParams();
   const { theme } = useTheme();
   const dispatch = useDispatch();
@@ -103,7 +73,7 @@ const ProductDetail = () => {
           {/* Right Column: Product Details */}
           <div>
             <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-            <p className={`${theme.subtext} mb-6`}>{product.description}</p>
+            <p className={`${theme.subtext} mb-6`}>{product.category}</p>
 
             <div className="flex items-center mb-6">
               <span className="text-xl font-bold">${product.price}</span>
@@ -115,70 +85,89 @@ const ProductDetail = () => {
                   />
                 ))}
                 <span className={`${theme.subtext} text-sm ml-2`}>
-                  {fakeProduct.reviews.length} Reviews
+                  {product.reviews?.length || 0} Reviews
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <button
-                onClick={handleAddToCart}
-                className={`${theme.primary} text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2`}
-              >
-                <ShoppingCart size={18} />
-                Add to Cart
-              </button>
-              <Link
-                to="/checkout"
-                className={`${theme.button} text-center rounded-lg font-medium p-3`}
-              >
-                Buy Now
-              </Link>
-            </div>
-
-            {/* Product Features */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4">Description</h2>
-              
-                    <span className="inline-block w-2 h-2 bg-green-500 rounded-full mx-2"></span>
-                    {product?.description}
-                            </div>
-          </div>
-        </div>
-
-        {/* Reviews Section */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold mb-6">Customer Reviews</h2>
-          {fakeProduct.reviews.length > 0 ? (
-            <div className="space-y-4">
-              {fakeProduct.reviews.map((review, idx) => (
-                <div
-                  key={idx}
-                  className={`${theme.card} ${theme.border} rounded-lg p-4`}
+            {/* Product Actions and Description Section */}
+            <div className="space-y-6">
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <button
+                  onClick={handleAddToCart}
+                  className={`${theme.primary} text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2`}
                 >
-                  <div className="flex items-center mb-2">
-                    {[...Array(5)].map((_, index) => (
-                      <Star
-                        key={index}
-                        className={index < review.rating ? "text-yellow-500" : "text-gray-400"}
-                      />
-                    ))}
-                    <span className={`${theme.subtext} text-sm ml-2`}>
-                      {review.rating} / 5
-                    </span>
-                  </div>
-                  <p className="text-sm">{review.comment}</p>
-                  <p
-                    className={`${theme.subtext} text-xs mt-2`}
-                  >
-                    - {review.name}
-                  </p>
-                </div>
-              ))}
+                  <ShoppingCart size={18} />
+                  Add to Cart
+                </button>
+                <Link
+                  to="/checkout"
+                  onClick={handleAddToCart}
+                  className={`${theme.button} text-center rounded-lg font-medium p-3 ${
+                    product.stock === 0 ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+                  }`}
+                >
+                  Buy Now
+                </Link>
+              </div>
+
+              {/* Product Stock Status */}
+              <div className="mb-4">
+                {product.stock > 0 ? (
+                  <h2 className="text-lg font-semibold">
+                    Quantity: <span className="text-green-600 dark:text-green-400">{product.stock} in stock</span>
+                  </h2>
+                ) : (
+                  <h2 className="text-lg font-semibold text-red-600 dark:text-red-400">
+                    Sold Out
+                  </h2>
+                )}
+              </div>
+
+              {/* Product Description */}
+              <div>
+                <h2 className="text-lg font-semibold mb-3">Description</h2>
+                <p className="flex items-start">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full mt-2 mr-2"></span>
+                  <span>{product.description}</span>
+                </p>
+              </div>
             </div>
-          ) : (
-            <p className={`${theme.subtext} text-sm`}>No reviews yet. Be the first to write one!</p>
-          )}
+
+            {/* Reviews Section */}
+            <div className="mt-12">
+              <h2 className="text-xl font-semibold mb-6">Customer Reviews</h2>
+              {product.reviews && product.reviews.length > 0 ? (
+                <div className="space-y-4">
+                  {product.reviews.map((review, idx) => (
+                    <div
+                      key={idx}
+                      className={`${theme.card} ${theme.border} rounded-lg p-4`}
+                    >
+                      <div className="flex items-center mb-2">
+                        {[...Array(5)].map((_, index) => (
+                          <Star
+                            key={index}
+                            className={index < review.rating ? "text-yellow-500" : "text-gray-400"}
+                          />
+                        ))}
+                        <span className={`${theme.subtext} text-sm ml-2`}>
+                          {review.rating} / 5
+                        </span>
+                      </div>
+                      <p className="text-sm">{review.comment}</p>
+                      <p className={`${theme.subtext} text-xs mt-2`}>
+                        - {review.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className={`${theme.subtext} text-sm`}>No reviews yet. Be the first to write one!</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

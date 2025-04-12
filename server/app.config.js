@@ -45,6 +45,8 @@ module.exports = (app) => {
   // Models/Schemas
   require("./models/User");
   require("./models/Product");
+  require("./models/Order");
+
 
 
 

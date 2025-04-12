@@ -28,6 +28,7 @@ import AdminProductDetail from "./pages/Admin/Products/AdminProductDetails";
 import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 import Dashboard from "./pages/Admin/Dashboard";
+import OrderSuccess from "./pages/Checkout/OrderSuccess";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -106,8 +107,12 @@ function App() {
           <Route path="" element={<Product />} />
           <Route path="detail/:id" element={<ProductDetail />} />
           </Route>
+
+          <Route path="checkout">
+          <Route path="" element={<Checkout />} />
+          <Route path="success/:orderId" element={<OrderSuccess />} />
+          </Route>
           
-          <Route path="checkout" element={<Checkout />} />
           <Route
             path="/profile"
             element={

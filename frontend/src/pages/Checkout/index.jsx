@@ -1,24 +1,34 @@
 // Main Checkout Component
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import AddressSection from './AddressSection';
+import AddressForm from './AddressForm';
 import PaymentSection from './PaymentSection';
 import OrderSummary from './OrderSummary';
 import { Box } from 'lucide-react';
+import { failureToaster, successToaster } from './../../utils/swal';
+import axios from 'axios';
+import { removeFromCart } from '../../redux/slices/cartSlice';
 
 const Checkout = () => {
   const { theme } = useTheme();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
-  // State for addresses
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  // Single address state
+  const [addressDetails, setAddressDetails] = useState({
+    fullName: '',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: ''
+  });
 
   // Payment methods state
-  const [paymentMethod, setPaymentMethod] = useState('cashOnDelivery');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expirationDate: '',
@@ -31,52 +41,42 @@ const Checkout = () => {
   }, []);
 
   const loadUserData = () => {
-    try {
       const userInfoString = localStorage.getItem('userInfo');
       if (userInfoString) {
         const userInfo = JSON.parse(userInfoString);
-        
-        if (userInfo.addresses && userInfo.addresses.length > 0) {
-          setAddresses(userInfo.addresses);
-          
-          const defaultAddress = userInfo.addresses.find(addr => addr.isDefault);
-          setSelectedAddressId(defaultAddress ? defaultAddress.id : userInfo.addresses[0].id);
+        // If user has a default address, load it
+        if (userInfo) {
+          setAddressDetails({
+            fullName: userInfo.fullName || '',
+            street: userInfo.street || '',
+            city: userInfo.city || '',
+            state: userInfo.state || '',
+            zip: userInfo.zip || '',
+            country: userInfo.country || ''
+          });
         }
       }
-    } catch (error) {
-      console.error('Error loading user information:', error);
-    }
+    
   };
 
   // Calculate totals
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const shippingCost = totalPrice > 100 ? 0 : 10;
-  const taxAmount = totalPrice * 0.07; // 7% tax
-  const orderTotal = totalPrice + shippingCost + taxAmount;
+  const shippingFee = totalPrice > 100 ? 0 : 10;
+  const orderTotal = totalPrice + shippingFee;
 
-  // Update localStorage with new addresses
-  const updateLocalStorage = (updatedAddresses) => {
-    try {
-      const userInfoString = localStorage.getItem('userInfo');
-      let userInfo = userInfoString ? JSON.parse(userInfoString) : {};
-      userInfo.addresses = updatedAddresses;
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    } catch (error) {
-      console.error('Error updating user information:', error);
-    }
-  };
-
-  // Handle address management
-  const handleAddressUpdate = (newAddresses, newSelectedId) => {
-    setAddresses(newAddresses);
-    setSelectedAddressId(newSelectedId);
-    updateLocalStorage(newAddresses);
+  // Handle address field changes
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setAddressDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   // Handle payment method changes
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    if (method !== 'creditCard') {
+    if (method !== 'card') {
       setCardDetails({ cardNumber: '', expirationDate: '', cvv: '' });
     }
   };
@@ -86,39 +86,67 @@ const Checkout = () => {
     setCardDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle order placement
-  const handlePlaceOrder = () => {
-    // Validate requirements
-    if (!selectedAddressId) {
-      alert('Please select or add a shipping address');
+  const handlePlaceOrder = async () => {
+    const requiredFields = ['fullName', 'street', 'city', 'state', 'zip', 'country'];
+    const missingFields = requiredFields.filter(field => !addressDetails[field]);
+  
+    if (missingFields.length > 0) {
+      failureToaster(`Please fill in these required shipping fields: ${missingFields.join(', ')}`);
       return;
     }
-
+  
     if (paymentMethod === 'creditCard') {
       const { cardNumber, expirationDate, cvv } = cardDetails;
       if (!cardNumber.trim() || !expirationDate.trim() || !cvv.trim()) {
-        alert('Please complete all credit card fields');
+        failureToaster('Please complete all credit card fields');
         return;
       }
     }
+  
+    try {
+      const user = JSON.parse(localStorage.getItem('userInfo'));
+      const token = localStorage.getItem('token');
+  
+      if (!user || !token) {
+        failureToaster("User not logged in");
+        return;
+      }
+  
+      const orderPayload = {
+        user: user.id,
+        items: cartItems.map(item => ({
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          productId: item._id
+        })),
+        totalPrice: orderTotal,
+        paymentMethod,
+        shippingFee,
+        shippingAddress: addressDetails
+      };
+  
+      const res = await axios.post("http://localhost:8000/api/orders", orderPayload, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      
+        successToaster('Order placed successfully!');
+        cartItems.forEach(item => {
+          dispatch(removeFromCart(item?._id));
+        });
 
-    // Create order object
-    const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-    const order = {
-      items: cartItems,
-      shippingAddress: selectedAddress,
-      paymentMethod,
-      cardDetails: paymentMethod === 'creditCard' ? cardDetails : null,
-      subtotal: totalPrice,
-      shipping: shippingCost,
-      tax: taxAmount,
-      total: orderTotal,
-      orderDate: new Date().toISOString()
-    };
-
-    // Save order to localStorage and navigate to confirmation
-    localStorage.setItem('latestOrder', JSON.stringify(order));
-    navigate('/order-confirmation');
+        const orderId = res.data.data._id
+  
+        navigate(`success/${orderId}`);
+      
+  
+    } catch (error) {
+      console.error('Order API error:', error);
+      failureToaster(error.response?.data?.message || 'Failed to place order');
+    }
   };
 
   return (
@@ -144,12 +172,11 @@ const Checkout = () => {
               </h1>
             </div>
 
-            {/* Address Section */}
-            <AddressSection 
-              addresses={addresses}
-              selectedAddressId={selectedAddressId}
+            {/* Simple Address Form */}
+            <AddressForm 
+              addressDetails={addressDetails}
               theme={theme}
-              onAddressUpdate={handleAddressUpdate}
+              onAddressChange={handleAddressChange}
             />
 
             {/* Payment Method Section */}
@@ -167,11 +194,10 @@ const Checkout = () => {
             <OrderSummary 
               cartItems={cartItems}
               totalPrice={totalPrice}
-              shippingCost={shippingCost}
-              taxAmount={taxAmount}
+              shippingCost={shippingFee}
               orderTotal={orderTotal}
               theme={theme}
-              canOrder={!!selectedAddressId}
+              canOrder={true}
               onPlaceOrder={handlePlaceOrder}
             />
           </div>

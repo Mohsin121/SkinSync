@@ -7,14 +7,13 @@ import axios from 'axios';
 const Address = () => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
-
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState({
-    street: '123 Main St',
-    city: 'Springfield',
-    state: 'IL',
-    zip: '62701',
-    country: 'United States',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: ''
   });
 
   // Handle input changes
@@ -25,22 +24,20 @@ const Address = () => {
     });
   };
 
-
-    // Get user data from localStorage
-    useEffect(() => {
-      const userData = JSON.parse(localStorage.getItem("userInfo"));
-      if (userData) {
-        
-        setAddress({
-          state: userData?.state || '',
-          city: userData?.city || '',
-          street: userData?.street || '',
-          zip: userData?.zip || '',
-          country: userData?.country || ''
-
-        });
-      }
-    }, []);
+  // Get user data from localStorage
+  useEffect(() => {
+    const userData = localStorage.getItem("userInfo");
+    if (userData) {
+      const parsedData = JSON.parse(userData);
+      setAddress({
+        street: parsedData?.street || '',
+        city: parsedData?.city || '',
+        state: parsedData?.state || '',
+        zip: parsedData?.zip || '',
+        country: parsedData?.country || ''
+      });
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,28 +49,23 @@ const Address = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      
+
       if (response.data.data) {
         // Update localStorage with new data
         const updatedUserInfo = { ...JSON.parse(localStorage.getItem("userInfo")), ...address };
         localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
-        
+
         // Update state
-        setAddress({
-          fullName: address.fullName,
-          email: address.email,
-          phone: address.phone,
-          skinTone: address.skinTone
-        });
-        
+        setAddress(updatedUserInfo);
+
         // Show success message
         successToaster('Address updated successfully');
-        
+
         // Exit edit mode
         setIsEditing(false);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating address:', error);
       failureToaster(error.response?.data?.message || 'Failed to update address');
     } finally {
       setIsLoading(false);
@@ -86,39 +78,24 @@ const Address = () => {
         <h3 className="text-xl font-semibold">Shipping Address</h3>
         <button
           onClick={() => setIsEditing(!isEditing)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-            currentTheme === 'midnight'
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-          } transition-colors duration-200`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} transition-colors duration-200`}
         >
           {isEditing ? <X size={16} /> : <Edit size={16} />}
           <span>{isEditing ? 'Cancel' : 'Edit Address'}</span>
         </button>
       </div>
 
-      <div
-        className={`p-6 rounded-lg ${
-          currentTheme === 'midnight' ? 'bg-gray-800' : 'bg-gray-50'
-        }`}
-      >
+      <div className={`p-6 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-800' : 'bg-gray-50'}`}>
         {isEditing ? (
-          // Editable fields
           <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Street
-              </label>
+              <label className="block text-sm font-medium mb-1">Street</label>
               <input
                 type="text"
                 name="street"
                 value={address.street}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 rounded-lg ${
-                  currentTheme === 'midnight'
-                    ? 'bg-gray-700 text-gray-200'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
+                className={`w-full px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
               />
             </div>
 
@@ -130,11 +107,7 @@ const Address = () => {
                   name="city"
                   value={address.city}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg ${
-                    currentTheme === 'midnight'
-                      ? 'bg-gray-700 text-gray-200'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
                 />
               </div>
               <div className="w-1/2">
@@ -144,11 +117,7 @@ const Address = () => {
                   name="state"
                   value={address.state}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg ${
-                    currentTheme === 'midnight'
-                      ? 'bg-gray-700 text-gray-200'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
                 />
               </div>
             </div>
@@ -161,11 +130,7 @@ const Address = () => {
                   name="zip"
                   value={address.zip}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg ${
-                    currentTheme === 'midnight'
-                      ? 'bg-gray-700 text-gray-200'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
                 />
               </div>
               <div className="w-1/2">
@@ -175,44 +140,26 @@ const Address = () => {
                   name="country"
                   value={address.country}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg ${
-                    currentTheme === 'midnight'
-                      ? 'bg-gray-700 text-gray-200'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}
+                  className={`w-full px-4 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
                 />
               </div>
             </div>
 
             <button
               type="button"
-              onClick={(e) => handleSubmit(e)}
-              className={`mt-4 px-6 py-2 rounded-lg ${
-                currentTheme === 'midnight'
-                  ? 'bg-cyan-500 hover:bg-cyan-400 text-white'
-                  : 'bg-gray-500 hover:bg-gray-400 text-white'
-              }`}
+              onClick={handleSubmit}
+              className={`mt-4 px-6 py-2 rounded-lg ${currentTheme === 'midnight' ? 'bg-cyan-500 hover:bg-cyan-400 text-white' : 'bg-gray-500 hover:bg-gray-400 text-white'}`}
             >
               Save Address
             </button>
           </form>
         ) : (
-          // Display address
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <MapPin
-                size={20}
-                className={
-                  currentTheme === 'midnight' ? 'text-cyan-400 mt-1' : 'text-gray-500 mt-1'
-                }
-              />
+              <MapPin size={20} className={currentTheme === 'midnight' ? 'text-cyan-400 mt-1' : 'text-gray-500 mt-1'} />
               <div>
                 <h4 className="font-medium">Home Address</h4>
-                <p
-                  className={`${
-                    currentTheme === 'midnight' ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
+                <p className={`${currentTheme === 'midnight' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {address.street} <br />
                   {address.city}, {address.state} {address.zip}, <br />
                   {address.country}
