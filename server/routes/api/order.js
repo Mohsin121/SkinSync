@@ -83,6 +83,17 @@ router.get('/user', auth.required, auth.user, async (req, res) => {
   }
 });
 
+router.get('/user/:id', async (req, res) => {
+  console.log("User",req.user)
+  try {
+    const orders = await Order.find({ user: req.params.id });
+    return ResponseHandler.ok(res, orders);
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    return ResponseHandler.badRequest(res, error.message || 'Failed to fetch user orders');
+  }
+});
+
 // UPDATE order status
 router.put('/status/:orderId', async (req, res) => {
   try {
@@ -100,6 +111,41 @@ router.put('/status/:orderId', async (req, res) => {
     return ResponseHandler.badRequest(res, error.message || 'Failed to update order status');
   }
 });
+
+router.put('/tracking/:orderId', async (req, res) => {
+  try {
+    const { carrier, trackingNumber, estimatedDelivery } = req.body; // Extract tracking info from request body
+    const { orderId } = req.params;  // Extract order ID from the URL parameter
+
+    // Find the order by its ID
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return ResponseHandler.badRequest(res, 'Order not found');
+    }
+
+    // If the order is not yet shipped, add the tracking information
+    if (order.status !== 'shipped') {
+      return ResponseHandler.badRequest(res, 'Order must be shipped before adding tracking information');
+    }
+
+    // Update the tracking information
+    order.trackingInfo = {
+      carrier,
+      trackingNumber,
+      estimatedDelivery: new Date(estimatedDelivery) // Ensure estimatedDelivery is a Date object
+    };
+
+    // Save the updated order
+    await order.save();
+
+    return ResponseHandler.ok(res, order, 'Tracking information updated successfully');
+  } catch (error) {
+    console.error('Error updating tracking information:', error);
+    return ResponseHandler.badRequest(res, error.message || 'Failed to update tracking information');
+  }
+});
+
 
 // DELETE an order
 router.delete('/:orderId', async (req, res) => {

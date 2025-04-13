@@ -13,6 +13,7 @@ const OrderSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },  // Total price of the order
   shippingFee: { type: Number, required: true },  // Total price of the order
 
+
   shippingAddress: {  
     fullName: { type: String, required: true },
     street: { type: String, required: true },
@@ -20,6 +21,11 @@ const OrderSchema = new mongoose.Schema({
     state: { type: String, required: true },
     zip: { type: String, required: true },
     country: { type: String, required: true }
+  },
+  trackingInfo:{
+    carrier: { type: String },
+    trackingNumber: { type: String },
+    estimatedDelivery: { type: Date },
   },
   paymentMethod: { type: String,  enum: ['card', 'cash'] }, // Order status
 

@@ -12,7 +12,7 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/admin/products");
+        const response = await axios.get("http://localhost:8000/api/products");
     setProducts(response.data.data);
       } catch (err) {
         setError(err.message);
@@ -32,7 +32,7 @@ const Products = () => {
       <div className="flex justify-between items-center p-6 border-b">
         <h2 className="text-2xl font-bold text-gray-900">Products</h2>
         <div className="flex space-x-3">
-          <Link to="/admin/products/add" className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">  
+          <Link to="add" className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">  
             <Plus size={20} className="mr-2" /> Add Product
           </Link>
          
@@ -64,9 +64,7 @@ const Products = () => {
                   <Link to={`edit/${product._id}`}  className="text-gray-600 hover:text-gray-900">
                       <Edit size={18} />
                     </Link>
-                    <button className="text-red-500 hover:text-red-700">
-                      <Trash2 size={18} />
-                    </button>
+                    
                     <Link to={`detail/${product._id}`} className="text-yellow-500 hover:text-red-700">
                       <Eye size={18} />
                     </Link>

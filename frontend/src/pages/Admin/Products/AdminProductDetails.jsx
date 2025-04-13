@@ -14,7 +14,7 @@ const AdminProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/admin/product/${id}`);
+        const response = await axios.get(`http://localhost:8000/api/products/${id}`);
         setProduct(response.data.data);
       } catch (err) {
         setError(err.message);
@@ -28,7 +28,7 @@ const AdminProductDetail = () => {
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/admin/product/${id}`);
+      await axios.delete(`http://localhost:8000/api/products/product/${id}`);
       navigate("/admin/products");
     } catch (err) {
       failureToaster("Failed to delete product");
@@ -37,7 +37,7 @@ const AdminProductDetail = () => {
 
   if (loading) return <div className="text-center mt-5">Loading product details...</div>;
   if (error) return <div className="text-red-500 text-center mt-5">Error: {error}</div>;
-
+console.log("asdasdasd")
   return (
     <div className="w-100 mx-auto p-5">
       <button onClick={() => navigate("/admin/products")} className="flex items-center text-gray-600 hover:text-gray-900 mb-5">

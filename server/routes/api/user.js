@@ -19,7 +19,7 @@ router.get("/context",auth.required, auth.user, (request, response) => {
 router.get("/users", async (request, response) => {
 
   try {
-    const users= await User.find({});
+    const users = await User.find({ role: { $ne: 'admin' } });
     console.log("users", users);
     return ResponseHandler.ok(response, users);
 

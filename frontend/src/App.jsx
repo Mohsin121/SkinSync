@@ -86,7 +86,7 @@ function App() {
   const ProtectedRoute = ({ children, role }) => {
     if (loading) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
-    if (role && user.role !== role) return <Navigate to="/" replace />;
+    if (role && user?.role !== role) return <Navigate to="/" replace />;
     return children;
   };
 
@@ -102,12 +102,17 @@ function App() {
         {/* Admin Routes */}
         <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="products/add" element={<AddProduct />} />
-          <Route path="products/detail/:id" element={<AdminProductDetail />} />
-          <Route path="products/edit/:id" element={<EditProduct />} />
-          <Route path="orders" element={<OrdersList />} />
-          <Route path="orders/detail" element={<OrderDetail />} />
+          <Route path="products">
+            <Route path="" element={<Products />} />
+            <Route path="add" element={<AddProduct />} />
+            <Route path="detail/:id" element={<AdminProductDetail />} />
+            <Route path="edit/:id" element={<EditProduct />} />
+
+          </Route>
+          <Route path="orders">
+            <Route path="" element={<OrdersList />} />
+            <Route path="detail/:orderId" element={<OrderDetail />} />
+          </Route>
           <Route path="users" element={<Users />} />
           <Route path="users/detail/:userId" element={<UserDetail />} />
         </Route>

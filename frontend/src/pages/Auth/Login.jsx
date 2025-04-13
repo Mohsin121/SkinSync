@@ -32,7 +32,11 @@ const Login = () => {
       localStorage.setItem("token", response.data.data.token);
       localStorage.setItem("userInfo", JSON.stringify(response.data.data));
 
-      navigate("/");
+      if (response.data.data.role === "user") {
+        navigate("/");  // Redirect to home page for regular users
+      } else {
+        navigate("/admin/dashboard");  // Redirect to admin dashboard for admins
+      }
     } catch (error) {
       console.log("Error", error);
       if (error.response && error.response.data) {

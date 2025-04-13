@@ -32,6 +32,76 @@ router.get("/:productId", async (req, res) => {
   }
 });
 
+router.post("/product", upload.array("images", 5), async (req, res) => {
+  try {
+    const { productName, description, price, category, stock, subcategory, suggestedColors } = req.body;
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    // Generate image URLs
+    const images = req.files.map((file) => `http://localhost:8000/uploads/${file.filename}`);
+
+    const newProduct = new Product({
+      name: productName,
+      description,
+      price,
+      category,
+      subcategory,
+      suggestedColors: JSON.parse(suggestedColors), // Parse JSON string to an array
+      stock,
+      images,
+    });
+
+    await newProduct.save();
+    return ResponseHandler.ok(res, newProduct, "Product created successfully");
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return ResponseHandler.badRequest(res, error.message || "Error creating product");
+  }
+});
+
+router.put("/:productId", upload.array("images", 5), async (req, res) => {
+  try {
+    const { productName, description, price, category, stock, subcategory, suggestedColors, existingImages } = req.body;
+
+    // Ensure suggestedColors is always an array
+    const parsedSuggestedColors = Array.isArray(suggestedColors) ? suggestedColors : JSON.parse(suggestedColors);
+
+    let images = [];
+
+    if (req.files && req.files.length > 0) {
+      images = req.files.map((file) => `http://localhost:8000/uploads/${file.filename}`);
+    }
+
+    // Get the existing product data
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      return ResponseHandler.badRequest(res, "Product not found");
+    }
+
+    // Merge existing images with new ones
+    const allImages = existingImages ? [...JSON.parse(existingImages), ...images] : images;
+
+    product.name = productName || product.name;
+    product.description = description || product.description;
+    product.stock = stock || product.stock;
+    product.category = category || product.category;
+    product.subcategory = subcategory || product.subcategory;
+    product.suggestedColors = parsedSuggestedColors || product.suggestedColors;
+    product.price = price || product.price;
+    product.images = allImages;
+
+    await product.save();
+
+    return ResponseHandler.ok(res, product, "Product updated successfully");
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return ResponseHandler.badRequest(res, error.message || "Error updating product");
+  }
+});
+
 
 
 

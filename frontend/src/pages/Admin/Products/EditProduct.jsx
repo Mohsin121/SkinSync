@@ -42,7 +42,7 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/admin/product/${id}`, {
+        const response = await axios.get(`http://localhost:8000/api/products/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -174,7 +174,7 @@ const EditProduct = () => {
 
     try {
       await axios.put(
-        `http://localhost:8000/api/admin/product/${id}`,
+        `http://localhost:8000/api/products/${id}`,
         formDataToSend,
         {
           headers: {
