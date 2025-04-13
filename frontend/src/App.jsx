@@ -37,14 +37,17 @@ function App() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  // Verify user function
   const verifyUser = async () => {
     try {
       const { data } = await axios.get("http://localhost:8000/api/user/context", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       localStorage.setItem("userInfo", JSON.stringify(data.data));
       setUser(data.data);
       setIsAuthenticated(true);
+
       if (data.data.role === "admin") {
         navigate("/admin/dashboard");
       } else {
@@ -67,7 +70,17 @@ function App() {
       setLoading(false);
       return;
     }
-    verifyUser();
+
+    // If token exists in localStorage, verify the user
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      const parsedUserInfo = JSON.parse(storedUserInfo);
+      setUser(parsedUserInfo);
+      setIsAuthenticated(true);
+      setLoading(false);
+    } else {
+      verifyUser();
+    }
   }, [token]);
 
   const ProtectedRoute = ({ children, role }) => {
@@ -104,23 +117,20 @@ function App() {
           <Route path="/" element={<Home />} />
           
           <Route path="products">
-          <Route path="" element={<Product />} />
-          <Route path="detail/:id" element={<ProductDetail />} />
+            <Route path="" element={<Product />} />
+            <Route path="detail/:id" element={<ProductDetail />} />
           </Route>
 
           <Route path="checkout">
-          <Route path="" element={<Checkout />} />
-          <Route path="success/:orderId" element={<OrderSuccess />} />
+            <Route path="" element={<Checkout />} />
+            <Route path="success/:orderId" element={<OrderSuccess />} />
           </Route>
           
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
           <Route path="/personalization">
             <Route index element={<SkinToneSuggestion />} />
             <Route path="recommendations/:toneId" element={<RecommendedProducts />} />
