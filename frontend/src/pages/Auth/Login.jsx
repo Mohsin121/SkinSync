@@ -31,11 +31,13 @@ const Login = () => {
       successToaster("Login Successful");
       localStorage.setItem("token", response.data.data.token);
       localStorage.setItem("userInfo", JSON.stringify(response.data.data));
+      console.log("user",response.data.data.role)
 
       if (response.data.data.role === "user") {
         navigate("/");  // Redirect to home page for regular users
-      } else {
-        navigate("/admin/dashboard");  // Redirect to admin dashboard for admins
+      }
+       if (response.data.data.role === "admin") {
+        navigate("/admin/dashboard");  
       }
     } catch (error) {
       console.log("Error", error);

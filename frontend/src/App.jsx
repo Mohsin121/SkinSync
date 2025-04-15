@@ -84,9 +84,12 @@ function App() {
   }, [token]);
 
   const ProtectedRoute = ({ children, role }) => {
+    console.log("user", user)
+    console.log("role", role)
+
     if (loading) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
-    if (role && user?.role !== role) return <Navigate to="/" replace />;
+    if ((role && user?.role !== role) || !user) return <Navigate to="/" replace />;
     return children;
   };
 
@@ -100,14 +103,13 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Admin Routes */}
-        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+        <Route path="admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products">
             <Route path="" element={<Products />} />
             <Route path="add" element={<AddProduct />} />
             <Route path="detail/:id" element={<AdminProductDetail />} />
             <Route path="edit/:id" element={<EditProduct />} />
-
           </Route>
           <Route path="orders">
             <Route path="" element={<OrdersList />} />
@@ -132,7 +134,7 @@ function App() {
           </Route>
           
           <Route path="/profile" element={
-            <ProtectedRoute>
+            <ProtectedRoute role="user">
               <Profile />
             </ProtectedRoute>
           } />

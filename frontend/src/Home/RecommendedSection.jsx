@@ -19,7 +19,7 @@ const RecommendedSection = () => {
       if (user) {
         try {
           const userData = JSON.parse(user);
-          const userID = userData.id;
+          const userID = userData?.id;
           
           const res = await axios.get(`http://localhost:8000/api/products/recommended/${userID}`);
           setRecommendedProducts(res.data.data);
