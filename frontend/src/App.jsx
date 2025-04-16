@@ -1,4 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -29,100 +35,67 @@ import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 import Dashboard from "./pages/Admin/Dashboard";
 import OrderSuccess from "./pages/Checkout/OrderSuccess";
-import Review from './pages/Review/index';
+import Review from "./pages/Review/index";
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null); // Start as null
   const [loading, setLoading] = useState(true); // Set loading true initially
   const token = localStorage.getItem("token");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Check user authentication and role after login
-  const verifyUser = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:8000/api/user/context", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      localStorage.setItem("userInfo", JSON.stringify(data.data));
-      setUser(data.data);
-      setIsAuthenticated(truse);
-      setLoading(false);
-
-      // Redirect based on role
-      if (data.data.role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/");
-      }
-
-    } catch (error) {
-      console.error("Authentication error:", error);
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInfo");
-      setIsAuthenticated(false);
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
     if (!token) {
-      setIsAuthenticated(false);
       setLoading(false);
       return;
     }
-
+    // Check for user info in localStorage
     const storedUserInfo = localStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      const parsedUserInfo = JSON.parse(storedUserInfo);
-      setUser(parsedUserInfo);
-      setIsAuthenticated(true);
-      setLoading(false);
-    } else {
-      verifyUser();
-    }
+
+    const parsedUserInfo = JSON.parse(storedUserInfo);
+    setUser(parsedUserInfo); // Set the user state with stored data
+    setLoading(false);
   }, [token]);
 
-  // Protected Route for admin/user routes
-  const ProtectedRoute = ({ children, role }) => {
-    if (loading) return <LoadingSpinner />;
-    if (!isAuthenticated) return <Navigate to="/login" replace />;
-    if (role && user?.role !== role) return <Navigate to="/" replace />;
-    return children;
-  };
-
-
+  if (loading) {
+    return <LoadingSpinner />; // Show loading spinner until user data is loaded
+  }
 
   return (
     <ThemeProvider>
       <Routes>
-        {/* Auth Routes */}
+      <Route  element={<UserLayout />}>
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Admin Routes */}
-        <Route path="admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products">
-            <Route path="" element={<Products />} />
-            <Route path="add" element={<AddProduct />} />
-            <Route path="detail/:id" element={<AdminProductDetail />} />
-            <Route path="edit/:id" element={<EditProduct />} />
-          </Route>
-          <Route path="orders">
-            <Route path="" element={<OrdersList />} />
-            <Route path="detail/:orderId" element={<OrderDetail />} />
-          </Route>
-          <Route path="users" element={<Users />} />
-          <Route path="users/detail/:userId" element={<UserDetail />} />
         </Route>
 
-        {/* User Routes */}
+        {/* Admin Routes */}
+        {user?.role === "admin" && (
+          <Route path="admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="products">
+              <Route path="" element={<Products />} />
+              <Route path="add" element={<AddProduct />} />
+              <Route path="detail/:id" element={<AdminProductDetail />} />
+              <Route path="edit/:id" element={<EditProduct />} />
+            </Route>
+            <Route path="orders">
+              <Route path="" element={<OrdersList />} />
+              <Route path="detail/:orderId" element={<OrderDetail />} />
+            </Route>
+            <Route path="users" element={<Users />} />
+            <Route path="users/detail/:userId" element={<UserDetail />} />
+          </Route>
+        )}
+
         <Route path="/" element={<UserLayout />}>
           <Route path="" element={<Home />} />
-          
+
           <Route path="products">
             <Route path="" element={<Product />} />
             <Route path="detail/:id" element={<ProductDetail />} />
@@ -132,22 +105,22 @@ function App() {
             <Route path="" element={<Checkout />} />
             <Route path="success/:orderId" element={<OrderSuccess />} />
           </Route>
-          
-          <Route path="/profile" element={
-            <ProtectedRoute role="user">
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/personalization">
+          {user && user?.role === "user" && (
+            <Route path="profile" element={<Profile />} />
+          )}
+          <Route path="personalization">
             <Route index element={<SkinToneSuggestion />} />
-            <Route path="recommendations/:toneId" element={<RecommendedProducts />} />
+            <Route
+              path="recommendations/:toneId"
+              element={<RecommendedProducts />}
+            />
           </Route>
-          <Route path="/review/:productId" element={<Review />} />
 
-
-          
-          <Route path="*" element={<NotFound />} />
+          {user && user?.role === "user" && ( <Route path="review/:productId" element={<Review />} />
+          )}
         </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </ThemeProvider>
   );

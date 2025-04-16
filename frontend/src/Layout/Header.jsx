@@ -54,9 +54,11 @@ const Header = () => {
               </Link>
             </nav>
 
-            {/* Right side buttons */}
+          
             <div className="flex items-center space-x-4 relative">
-              {/* Theme Toggle */}
+            {user && (
+              <>
+             
               <button
                 onClick={toggleTheme}
                 className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
@@ -69,7 +71,7 @@ const Header = () => {
                 )}
               </button>
 
-              {/* Cart Button */}
+              
               <button
                 onClick={() => setIsCartOpen(true)}
                 className={`${theme?.card} p-2 rounded-full hover:opacity-80 relative`}
@@ -90,8 +92,10 @@ const Header = () => {
                   </span>
                 )}
               </button>
+              </>
+)}
 
-              {/* User Account */}
+           
               {user && (
                 <div className="relative">
                   <button
