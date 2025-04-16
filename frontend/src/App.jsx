@@ -29,16 +29,15 @@ import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 import Dashboard from "./pages/Admin/Dashboard";
 import OrderSuccess from "./pages/Checkout/OrderSuccess";
-import Review from "./pages/Review";
-
+import Review from './pages/Review/index';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null); // Start as null
+  const [loading, setLoading] = useState(true); // Set loading true initially
   const token = localStorage.getItem("token");
+  const navigate = useNavigate()
 
-  // Verify user function
+  // Check user authentication and role after login
   const verifyUser = async () => {
     try {
       const { data } = await axios.get("http://localhost:8000/api/user/context", {
@@ -47,14 +46,15 @@ function App() {
 
       localStorage.setItem("userInfo", JSON.stringify(data.data));
       setUser(data.data);
-      setIsAuthenticated(true);
+      setIsAuthenticated(truse);
+      setLoading(false);
 
+      // Redirect based on role
       if (data.data.role === "admin") {
         navigate("/admin/dashboard");
       } else {
         navigate("/");
       }
-      setLoading(false);
 
     } catch (error) {
       console.error("Authentication error:", error);
@@ -72,7 +72,6 @@ function App() {
       return;
     }
 
-    // If token exists in localStorage, verify the user
     const storedUserInfo = localStorage.getItem("userInfo");
     if (storedUserInfo) {
       const parsedUserInfo = JSON.parse(storedUserInfo);
@@ -84,15 +83,15 @@ function App() {
     }
   }, [token]);
 
+  // Protected Route for admin/user routes
   const ProtectedRoute = ({ children, role }) => {
-    console.log("user", user)
-    console.log("role", role)
-
     if (loading) return <LoadingSpinner />;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
-    if ((role && user?.role !== role) || !user) return <Navigate to="/" replace />;
+    if (role && user?.role !== role) return <Navigate to="/" replace />;
     return children;
   };
+
+
 
   return (
     <ThemeProvider>
@@ -121,8 +120,8 @@ function App() {
         </Route>
 
         {/* User Routes */}
-        <Route element={<UserLayout />}>
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<UserLayout />}>
+          <Route path="" element={<Home />} />
           
           <Route path="products">
             <Route path="" element={<Product />} />
@@ -145,6 +144,8 @@ function App() {
           </Route>
           <Route path="/review/:productId" element={<Review />} />
 
+
+          
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

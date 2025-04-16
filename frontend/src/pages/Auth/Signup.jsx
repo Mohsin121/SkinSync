@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { failureToaster, successToaster } from "../../utils/swal";
+import { AlertCircle } from "lucide-react";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -156,7 +157,10 @@ const Signup = () => {
         </form>
 
         {serverError && (
-    <p className="text-red-500 text-center mt-2">{serverError}</p>
+  <div className="mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-md flex items-center justify-center">
+    <AlertCircle size={16} className="mr-2" />
+    <span>{serverError}</span>
+  </div>
 )}
 
         <p className="mt-6 text-center text-sm text-gray-600">

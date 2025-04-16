@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { failureToaster, successToaster } from "../../utils/swal";
 import axios from "axios";
 
@@ -33,12 +33,15 @@ const Login = () => {
       localStorage.setItem("userInfo", JSON.stringify(response.data.data));
       console.log("user",response.data.data.role)
 
-      if (response.data.data.role === "user") {
-        navigate("/");  // Redirect to home page for regular users
+     // Wait a moment to ensure localStorage is updated
+     setTimeout(() => {
+      // Redirect based on user role
+      if (response.data.data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
       }
-       if (response.data.data.role === "admin") {
-        navigate("/admin/dashboard");  
-      }
+    }, 100);
     } catch (error) {
       console.log("Error", error);
       if (error.response && error.response.data) {
@@ -118,8 +121,12 @@ const Login = () => {
           </button>
         </form>
 
-        {serverError && <p className="text-red-500 text-center mt-2">{serverError}</p>}
-
+        {serverError && (
+  <div className="mt-4 p-3 bg-red-50 border border-red-300 text-red-700 rounded-md flex items-center justify-center">
+    <AlertCircle size={16} className="mr-2" />
+    <span>{serverError}</span>
+  </div>
+)}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don't have an account?{" "}
           <Link to="/signup" className="text-gray-600 hover:underline">

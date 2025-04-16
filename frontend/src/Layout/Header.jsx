@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Moon, Sun, User, ChevronDown } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, Moon, Sun, User, ChevronDown } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 
-import CartCanvas from '../components/CartCanvas';
-import SkinSyncLogo from '../components/SkinSyncLogo';
-import { useSelector } from 'react-redux';
+import CartCanvas from "../components/CartCanvas";
+import SkinSyncLogo from "../components/SkinSyncLogo";
+import { useSelector } from "react-redux";
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems); // Get cart items from Redux
+  const storedUserInfo = localStorage.getItem("userInfo");
+  const user = JSON.parse(storedUserInfo);
 
   const toggleProfileMenu = () => setIsProfileMenuOpen((prev) => !prev);
 
-const onLogout = () => {
-  localStorage.setItem("userInfo", null)
-  localStorage.setItem("token", null)
-  navigate("/login")
-}
+  const onLogout = () => {
+    localStorage.setItem("userInfo", null);
+    localStorage.setItem("token", null);
+    navigate("/");
+  };
 
   return (
     <>
@@ -45,7 +47,7 @@ const onLogout = () => {
                 Products
               </Link>
               <Link to="/personalization" className="hover:opacity-80">
-              Style Personalization
+                Style Personalization
               </Link>
               <Link to="/about" className="hover:opacity-80">
                 About
@@ -60,7 +62,11 @@ const onLogout = () => {
                 className={`${theme?.card} p-2 rounded-full hover:opacity-80`}
                 aria-label="Toggle theme"
               >
-                {theme?.name === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                {theme?.name === "dark" ? (
+                  <Sun size={20} />
+                ) : (
+                  <Moon size={20} />
+                )}
               </button>
 
               {/* Cart Button */}
@@ -86,38 +92,48 @@ const onLogout = () => {
               </button>
 
               {/* User Account */}
-              <div className="relative">
-                <button
-                  onClick={toggleProfileMenu}
-                  className={`${theme?.card} p-2 rounded-full hover:opacity-80 flex items-center`}
-                  aria-label="User account"
-                >
-                  <User size={20} />
-                  <ChevronDown className="ml-2" size={16} />
-                </button>
-
-                {/* Profile Menu */}
-                {isProfileMenuOpen && (
-                  <div
-                    className={`${theme?.card} ${theme?.border} absolute right-0 mt-2 py-2 w-48 rounded-lg shadow-lg z-50`}
+              {user && (
+                <div className="relative">
+                  <button
+                    onClick={toggleProfileMenu}
+                    className={`${theme?.card} p-2 rounded-full hover:opacity-80 flex items-center`}
+                    aria-label="User account"
                   >
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
-                    >
-                      Profile
-                    </Link>
+                    <User size={20} />
+                    <ChevronDown className="ml-2" size={16} />
+                  </button>
 
-                           
-                    <button
-                      onClick={() => onLogout()}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                  {/* Profile Menu */}
+                  {isProfileMenuOpen && (
+                    <div
+                      className={`${theme?.card} ${theme?.border} absolute right-0 mt-2 py-2 w-48 rounded-lg shadow-lg z-50`}
                     >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                      >
+                        Profile
+                      </Link>
+
+                      <button
+                        onClick={() => onLogout()}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!user && (
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 hover:bg-gray-100 hover:opacity-80"
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         </div>

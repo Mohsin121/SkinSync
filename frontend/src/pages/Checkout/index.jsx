@@ -87,6 +87,15 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = async () => {
+
+    const user = JSON.parse(localStorage.getItem('userInfo'));
+      const token = localStorage.getItem('token');
+  
+      if (!user || !token) {
+       navigate("/login")
+        return;
+      }
+  
     const requiredFields = ['fullName', 'street', 'city', 'state', 'zip', 'country'];
     const missingFields = requiredFields.filter(field => !addressDetails[field]);
   
@@ -104,14 +113,7 @@ const Checkout = () => {
     }
   
     try {
-      const user = JSON.parse(localStorage.getItem('userInfo'));
-      const token = localStorage.getItem('token');
-  
-      if (!user || !token) {
-        failureToaster("User not logged in");
-        return;
-      }
-  
+      
       const orderPayload = {
         user: user.id,
         items: cartItems.map(item => ({
