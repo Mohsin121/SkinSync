@@ -3,8 +3,11 @@ const { auth } = require("../../middlewares");
 const { ResponseHandler, upload } = require("../../utils");
 const Product = require("../../models/Product");
 const User = require("../../models/User");
+const Order = require("../../models/Order");
+
 // const { upload } = require("../../utils/multer"); // Import multer config
 const router = express.Router();
+
 
 
 // Get all products
@@ -211,6 +214,169 @@ router.delete("/product/:productId",  async (req, res) => {
     return ResponseHandler.badRequest(res, error.message || "Error deleting product");
   }
 });
+
+
+
+router.get("/dashboard/stats", auth.required, auth.admin, async (req, res) => {
+  try {
+   
+
+    // Get total users count
+    const totalUsers = await User.countDocuments();
+
+    // Get total products count
+    const totalProducts = await Product.countDocuments();
+
+    // Get total orders and revenue
+    const orders = await Order.find();
+    const totalOrders = orders.length;
+    const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+
+    // Calculate monthly revenue for the current year
+    const currentYear = new Date().getFullYear();
+    const monthlyRevenue = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lte: new Date(`${currentYear}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          revenue: { $sum: "$totalPrice" }
+        }
+      },
+      {
+        $project: {
+          month: "$_id",
+          revenue: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: { month: 1 }
+      }
+    ]);
+
+    // Format monthly revenue data
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const revenueData = monthNames.map((month, index) => {
+      const monthData = monthlyRevenue.find(item => item.month === index + 1);
+      return {
+        month,
+        revenue: monthData ? monthData.revenue : 0
+      };
+    });
+
+    // Get sales by category
+    const salesByCategory = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+      { $unwind: "$productDetails" },
+      {
+        $group: {
+          _id: "$productDetails.category",
+          sales: { $sum: "$items.quantity" }
+        }
+      },
+      {
+        $project: {
+          category: "$_id",
+          sales: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    // Get order status distribution
+    const orderStatus = await Order.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          name: "$_id",
+          value: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    // Get user growth (new users per month)
+    const userGrowth = await User.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01`),
+            $lte: new Date(`${currentYear}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          users: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          month: "$_id",
+          users: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: { month: 1 }
+      }
+    ]);
+
+    // Format user growth data
+    const userGrowthData = monthNames.map((month, index) => {
+      const monthData = userGrowth.find(item => item.month === index + 1);
+      return {
+        month,
+        users: monthData ? monthData.users : 0
+      };
+    });
+
+    // Recent orders
+    const recentOrders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate('user', 'fullName email');
+
+    // Return all dashboard data
+    return ResponseHandler.ok(res, {
+      summary: {
+        totalUsers,
+        totalProducts,
+        totalOrders,
+        totalRevenue
+      },
+      revenueData,
+      salesByCategory,
+      orderStatus,
+      userGrowthData,
+      recentOrders
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard stats:", error);
+    return ResponseHandler.serverError(res, error.message || "Error fetching dashboard statistics");
+  }
+})
 
 
 
