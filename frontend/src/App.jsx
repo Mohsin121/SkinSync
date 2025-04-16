@@ -120,7 +120,16 @@ function App() {
           )}
         </Route>
 
-        <Route path="*" element={<NotFound />} />
+        <Route
+  path="*"
+  element={
+    user && user?.role === "user" ? (
+      <Navigate to="/" replace />
+    ) : (
+      <Navigate to="/admin/dashboard" replace />
+    )
+  }
+/>
       </Routes>
     </ThemeProvider>
   );
