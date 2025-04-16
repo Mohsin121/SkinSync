@@ -5,6 +5,7 @@ import { addToCart } from "../../redux/slices/cartSlice";
 import { useTheme } from './../../context/ThemeContext';
 import { Link, useParams } from "react-router-dom";
 import axios from 'axios'; // Make sure you have axios installed
+import CustomerReviews from "./CustomerReviews";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -13,6 +14,11 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState("");
   const [product, setProduct] = useState(null); // State to hold the product data
   const [loading, setLoading] = useState(true); // State for loading status
+    const [reviews, setReviews] = useState([]);
+    const [totalReviews, setTotalReviews] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
+
+  
 
   // Fetch product details based on the ID from the URL
   useEffect(() => {
@@ -30,6 +36,32 @@ const ProductDetail = () => {
 
     fetchProduct();
   }, [id]);
+
+
+
+  const fetchReviews = async (productId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `http://localhost:8000/api/reviews/${productId}`
+      );
+      setReviews(response.data.data.reviews); 
+      setAverageRating(response.data.data.averageRating)
+      setTotalReviews(response.data.data.totalReviews)
+
+    } catch (error) {
+      console.error("Error fetching product:", error);
+    } finally {
+      setLoading(false); // Set loading to false once data is fetched
+    }
+  };
+
+  useEffect(() => {
+    if (product?._id) {
+      fetchReviews(product._id);
+    }
+  }, [product]);
+
 
   // Handle adding product to cart
   const handleAddToCart = () => {
@@ -78,14 +110,14 @@ const ProductDetail = () => {
             <div className="flex items-center mb-6">
               <span className="text-xl font-bold">${product.price}</span>
               <div className="ml-4 flex items-center">
-                {[...Array(5)].map((_, index) => (
+                {[...Array(averageRating)].map((_, index) => (
                   <Star
                     key={index}
                     className={index < product.rating ? "text-yellow-500" : "text-gray-400"}
                   />
                 ))}
                 <span className={`${theme.subtext} text-sm ml-2`}>
-                  {product.reviews?.length || 0} Reviews
+                  {totalReviews || 0} Reviews
                 </span>
               </div>
             </div>
@@ -136,37 +168,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Reviews Section */}
-            <div className="mt-12">
-              <h2 className="text-xl font-semibold mb-6">Customer Reviews</h2>
-              {product.reviews && product.reviews.length > 0 ? (
-                <div className="space-y-4">
-                  {product.reviews.map((review, idx) => (
-                    <div
-                      key={idx}
-                      className={`${theme.card} ${theme.border} rounded-lg p-4`}
-                    >
-                      <div className="flex items-center mb-2">
-                        {[...Array(5)].map((_, index) => (
-                          <Star
-                            key={index}
-                            className={index < review.rating ? "text-yellow-500" : "text-gray-400"}
-                          />
-                        ))}
-                        <span className={`${theme.subtext} text-sm ml-2`}>
-                          {review.rating} / 5
-                        </span>
-                      </div>
-                      <p className="text-sm">{review.comment}</p>
-                      <p className={`${theme.subtext} text-xs mt-2`}>
-                        - {review.name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className={`${theme.subtext} text-sm`}>No reviews yet. Be the first to write one!</p>
-              )}
-            </div>
+            <CustomerReviews reviews = {reviews}/>
           </div>
         </div>
       </div>

@@ -29,6 +29,7 @@ import EditProduct from "./pages/Admin/Products/EditProduct";
 import OrderDetail from "./pages/Admin/Orders/OrderDetails";
 import Dashboard from "./pages/Admin/Dashboard";
 import OrderSuccess from "./pages/Checkout/OrderSuccess";
+import Review from "./pages/Review";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -142,6 +143,8 @@ function App() {
             <Route index element={<SkinToneSuggestion />} />
             <Route path="recommendations/:toneId" element={<RecommendedProducts />} />
           </Route>
+          <Route path="/review/:productId" element={<Review />} />
+
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

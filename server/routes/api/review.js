@@ -34,4 +34,23 @@ router.post('/create', auth.required, auth.user, async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const reviews = await Review.find({ product: req.params.id });
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+
+    return ResponseHandler.ok(res, {
+      averageRating: Number(averageRating),
+      totalReviews: reviews.length,
+      reviews
+    });
+  } catch (error) {
+    console.error('Error fetching user reviews:', error);
+    return ResponseHandler.badRequest(res, error.message || 'Failed to fetch user reviews');
+  }
+});
+
+
 module.exports = router;
