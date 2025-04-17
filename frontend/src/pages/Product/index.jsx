@@ -5,24 +5,53 @@ import { addToCart } from '../../redux/slices/cartSlice';
 import { useTheme } from '../../context/ThemeContext';
 import { Filter, ShoppingCart, X, SlidersHorizontal, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { categoryOptions } from '../../constants/CategoriesOptions'; // Import the categories
 
 const ProductsPage = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
 
+  // State for products and loading
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('All');
+  
+  // State for filters
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('All');
   const [priceRange, setPriceRange] = useState(200);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(200);
+  
+  // UI state
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch products from API
+  // Available categories for filtering
+  const categories = ['All', ...Object.keys(categoryOptions)];
+  
+  // Get subcategories based on selected category
+  const getSubcategories = () => {
+    if (selectedCategory === 'All') {
+      return [];
+    }
+    return ['All', ...(categoryOptions[selectedCategory] || [])];
+  };
+
+  // Fetch products when component mounts
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:8000/api/products');
-        setProducts(response.data.data); // Set products from API response
+        const productsData = response.data.data;
+        setProducts(productsData);
+        
+        // Calculate price range from product data
+        if (productsData.length > 0) {
+          const prices = productsData.map(product => product.price);
+          setMinPrice(Math.floor(Math.min(...prices)));
+          setMaxPrice(Math.ceil(Math.max(...prices)));
+          setPriceRange(Math.ceil(Math.max(...prices)));
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -33,19 +62,39 @@ const ProductsPage = () => {
     fetchProducts();
   }, []);
 
-  // Filter products based on the active filter and price range
-  const filteredProducts = products.filter(
-    (product) =>
-      (activeFilter === 'All' || product.category.toLowerCase() === activeFilter.toLowerCase()) &&
-      product.price <= priceRange
-  );
+  // Filter products based on selected filters
+  const filteredProducts = products.filter(product => {
+    // Category filter
+    const categoryMatch = selectedCategory === 'All' || 
+                         product.category === selectedCategory;
+    
+    // Subcategory filter
+    const subcategoryMatch = selectedSubcategory === 'All' || 
+                            product.subcategory === selectedSubcategory;
+    
+    // Price filter
+    const priceMatch = product.price <= priceRange;
+    
+    return categoryMatch && subcategoryMatch && priceMatch;
+  });
 
+  // Reset all filters
+  const resetFilters = () => {
+    setSelectedCategory('All');
+    setSelectedSubcategory('All');
+    setPriceRange(maxPrice);
+  };
+
+  // Handle category change
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setSelectedSubcategory('All'); // Reset subcategory when category changes
+  };
+
+  // Add product to cart
   const handleAddToCart = (product) => {
     dispatch(addToCart(product));
   };
-
-  // Available categories for filtering
-  const categories = ['All', 'Men', 'Women', 'Accessories', 'Footwear'];
 
   return (
     <div className={`${theme.background} ${theme.text} min-h-screen`}>
@@ -59,8 +108,9 @@ const ProductsPage = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters Panel - Desktop */}
-          <div className={`hidden lg:block w-64 shrink-0 ${theme.card} rounded-xl shadow-md p-6 h-fit sticky top-4 ${theme.border} border`}>
+          {/* SIDEBAR - FILTERS (Desktop) */}
+          <div className={`hidden lg:block w-64 ${theme.card} rounded-xl shadow-md p-6 h-fit sticky top-4 ${theme.border} border`}>
+            {/* Categories */}
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center">
                 <Tag size={18} className="mr-2" /> Categories
@@ -69,9 +119,9 @@ const ProductsPage = () => {
                 {categories.map((category) => (
                   <button
                     key={category}
-                    onClick={() => setActiveFilter(category)}
+                    onClick={() => handleCategoryChange(category)}
                     className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
-                      activeFilter === category
+                      selectedCategory === category
                         ? `${theme.primary} text-white`
                         : `hover:bg-opacity-10 hover:bg-gray-500`
                     }`}
@@ -82,6 +132,31 @@ const ProductsPage = () => {
               </div>
             </div>
 
+            {/* Subcategories - Only show if a category is selected */}
+            {selectedCategory !== 'All' && getSubcategories().length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold mb-4 flex items-center">
+                  <Tag size={18} className="mr-2" /> {selectedCategory} Types
+                </h2>
+                <div className="space-y-2">
+                  {getSubcategories().map((subcategory) => (
+                    <button
+                      key={subcategory}
+                      onClick={() => setSelectedSubcategory(subcategory)}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
+                        selectedSubcategory === subcategory
+                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      {subcategory === 'All' ? `All ${selectedCategory}` : subcategory}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Price Range Slider */}
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <h2 className="text-lg font-semibold mb-4 flex items-center">
                 <SlidersHorizontal size={18} className="mr-2" /> Price Range
@@ -89,46 +164,47 @@ const ProductsPage = () => {
               <div className="px-2">
                 <input
                   type="range"
-                  min="0"
-                  max="200"
+                  min={minPrice}
+                  max={maxPrice}
                   value={priceRange}
                   onChange={(e) => setPriceRange(Number(e.target.value))}
                   className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-2">
-                  <span className={`text-sm ${theme.subtext}`}>$0</span>
+                  <span className={`text-sm ${theme.subtext}`}>${minPrice}</span>
                   <span className={`text-sm font-medium`}>${priceRange}</span>
-                  <span className={`text-sm ${theme.subtext}`}>$200</span>
+                  <span className={`text-sm ${theme.subtext}`}>${maxPrice}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
+          {/* MAIN CONTENT */}
           <div className="flex-1">
-            {/* Mobile Filters Toggle */}
+            {/* Mobile Filters Toggle Button */}
             <div className="lg:hidden mb-4">
               <button 
-                onClick={() => setShowFilters(!showFilters)}
+                onClick={() => setShowMobileFilters(!showMobileFilters)}
                 className={`${theme.card} ${theme.border} border w-full py-3 rounded-lg flex items-center justify-center gap-2`}
               >
                 <Filter size={18} />
-                <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+                <span>{showMobileFilters ? 'Hide Filters' : 'Show Filters'}</span>
               </button>
             </div>
 
             {/* Mobile Filters Panel */}
-            {showFilters && (
+            {showMobileFilters && (
               <div className={`lg:hidden ${theme.card} rounded-xl shadow-md p-4 mb-6 ${theme.border} border`}>
+                {/* Mobile Categories */}
                 <div className="mb-4">
                   <h3 className="font-medium mb-2">Categories</h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map((category) => (
                       <button
                         key={category}
-                        onClick={() => setActiveFilter(category)}
+                        onClick={() => handleCategoryChange(category)}
                         className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                          activeFilter === category
+                          selectedCategory === category
                             ? `${theme.primary} text-white`
                             : `bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700`
                         }`}
@@ -139,12 +215,35 @@ const ProductsPage = () => {
                   </div>
                 </div>
 
+                {/* Mobile Subcategories */}
+                {selectedCategory !== 'All' && getSubcategories().length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="font-medium mb-2">{selectedCategory} Types</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {getSubcategories().map((subcategory) => (
+                        <button
+                          key={subcategory}
+                          onClick={() => setSelectedSubcategory(subcategory)}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                            selectedSubcategory === subcategory
+                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                              : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          {subcategory === 'All' ? `All` : subcategory}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Mobile Price Range */}
                 <div className="mb-2">
-                  <h3 className="font-medium mb-2">Price: $0 - ${priceRange}</h3>
+                  <h3 className="font-medium mb-2">Price: Up to ${priceRange}</h3>
                   <input
                     type="range"
-                    min="0"
-                    max="200"
+                    min={minPrice}
+                    max={maxPrice}
                     value={priceRange}
                     onChange={(e) => setPriceRange(Number(e.target.value))}
                     className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
@@ -159,9 +258,12 @@ const ProductsPage = () => {
                 <span className="font-medium">
                   {filteredProducts.length} Products
                 </span>
-                {activeFilter !== 'All' && (
+                {selectedCategory !== 'All' && (
                   <span className="ml-2">
-                    in <span className="font-semibold">{activeFilter}</span>
+                    in <span className="font-semibold">{selectedCategory}</span>
+                    {selectedSubcategory !== 'All' && (
+                      <span> / <span className="font-semibold">{selectedSubcategory}</span></span>
+                    )}
                   </span>
                 )}
               </div>
@@ -180,10 +282,7 @@ const ProductsPage = () => {
                 <h3 className="text-xl font-medium mb-2">No products found</h3>
                 <p className={`${theme.subtext} mb-4`}>Try changing your filters to see more products.</p>
                 <button
-                  onClick={() => {
-                    setActiveFilter('All');
-                    setPriceRange(200);
-                  }}
+                  onClick={resetFilters}
                   className={`${theme.primary} text-white px-4 py-2 rounded-lg`}
                 >
                   Reset Filters
@@ -194,15 +293,26 @@ const ProductsPage = () => {
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
-                    className={`${theme.card} ${theme.border} border rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all group`}
+                    className={`${theme.card} ${theme.border} border rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all`}
                   >
-                    <div className="relative overflow-hidden">
+                    {/* Product Image */}
+                    <div className="relative">
                       <img 
                         src={product.images[0]} 
                         alt={product.name} 
-                        className="w-full h-56 object-cover transform transition-transform group-hover:scale-105" 
+                        className="w-full h-56 object-cover" 
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      
+                      {/* Category Badge */}
+                      <div className="absolute top-2 left-2">
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${theme.primary} text-white`}>
+                          {product.category}
+                          {product.subcategory && ` / ${product.subcategory}`}
+                        </span>
+                      </div>
+                      
+                      {/* Quick View Button */}
+                      <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button
                           onClick={() => setQuickViewProduct(product)}
                           className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium"
@@ -211,12 +321,15 @@ const ProductsPage = () => {
                         </button>
                       </div>
                     </div>
+                    
+                    {/* Product Details */}
                     <div className="p-5">
                       <h2 className="text-lg font-semibold mb-1">{product.name}</h2>
                       <p className={`${theme.subtext} text-sm mb-3 line-clamp-2`}>{product.description}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
                         <div className="flex gap-2">
+                          {/* Add to Cart Button */}
                           <button
                             onClick={() => handleAddToCart(product)}
                             className={`${theme.primary} text-white p-2 rounded-lg`}
@@ -224,6 +337,8 @@ const ProductsPage = () => {
                           >
                             <ShoppingCart size={18} />
                           </button>
+                          
+                          {/* View Details Link */}
                           <Link
                             to={`detail/${product._id}`}
                             className={`${theme.card} border ${theme.border} p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
@@ -256,6 +371,7 @@ const ProductsPage = () => {
             className={`${theme.card} rounded-xl shadow-xl p-0 w-full max-w-2xl relative overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
               className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 z-10 transition-colors"
               onClick={() => setQuickViewProduct(null)}
@@ -263,7 +379,9 @@ const ProductsPage = () => {
               <X size={20} />
             </button>
             
+            {/* Product Quick View Content */}
             <div className="flex flex-col md:flex-row">
+              {/* Product Image */}
               <div className="md:w-1/2">
                 <img
                   src={quickViewProduct.images[0]}
@@ -271,15 +389,29 @@ const ProductsPage = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
+              
+              {/* Product Details */}
               <div className="md:w-1/2 p-6">
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${theme.primary} bg-opacity-10`}>
-                  {quickViewProduct.category}
-                </span>
+                {/* Category Tags */}
+                <div className="flex gap-2 mb-4">
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${theme.primary} text-white`}>
+                    {quickViewProduct.category}
+                  </span>
+                  {quickViewProduct.subcategory && (
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium bg-gray-200 dark:bg-gray-700`}>
+                      {quickViewProduct.subcategory}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Product Info */}
                 <h3 className="text-2xl font-bold mb-2">{quickViewProduct.name}</h3>
                 <p className={`${theme.subtext} mb-6`}>{quickViewProduct.description}</p>
                 <div className="mb-6">
                   <span className="text-2xl font-bold">${quickViewProduct.price.toFixed(2)}</span>
                 </div>
+                
+                {/* Action Buttons */}
                 <div className="flex gap-3">
                   <button
                     onClick={() => {

@@ -56,7 +56,7 @@ const Header = () => {
 
           
             <div className="flex items-center space-x-4 relative">
-            {user && (
+           
               <>
              
               <button
@@ -93,7 +93,7 @@ const Header = () => {
                 )}
               </button>
               </>
-)}
+
 
            
               {user && (
