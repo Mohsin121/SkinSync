@@ -57,7 +57,7 @@ const Footer = () => {
                   to="/products?category=cleansers"
                   className={`${theme?.accent} hover:opacity-80`}
                 >
-                  Cleansers
+                  Men
                 </Link>
               </li>
               <li>
@@ -65,7 +65,7 @@ const Footer = () => {
                   to="/products?category=moisturizers"
                   className={`${theme?.accent} hover:opacity-80`}
                 >
-                  Moisturizers
+                  Women
                 </Link>
               </li>
               <li>
@@ -73,7 +73,7 @@ const Footer = () => {
                   to="/products?category=serums"
                   className={`${theme?.accent} hover:opacity-80`}
                 >
-                  Serums
+                  Accesories
                 </Link>
               </li>
             </ul>

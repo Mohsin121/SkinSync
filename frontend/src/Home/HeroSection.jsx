@@ -9,21 +9,21 @@ const HeroSection = () => {
 
   const slides = [
     {
-      title: 'Best Furniture Collection For Your Interior.',
+      title: 'Shop Personalized Fashion.',
       discount: '54%',
-      image: 'https://picsum.photos/id/101/800/500',
+      image: 'https://images.pexels.com/photos/6764925/pexels-photo-6764925.jpeg?auto=compress&cs=tinysrgb&w=600',
       link: '/shop',
     },
     {
-      title: 'Elevate Your Living Space with Our Furniture',
+      title: 'Shop New Winter Collection',
       discount: '30%',
-      image: 'https://picsum.photos/id/102/800/500',
+      image: 'https://images.pexels.com/photos/375892/pexels-photo-375892.jpeg?auto=compress&cs=tinysrgb&w=600',
       link: '/shop',
     },
     {
-      title: 'Stylish and Comfortable Furniture Designs',
+      title: 'Customize Outfits With Personalized Skintones',
       discount: '40%',
-      image: 'https://picsum.photos/id/103/800/500',
+      image: 'https://media.istockphoto.com/id/1249641728/photo/composite-of-portraits-with-varying-shades-of-skin.jpg?b=1&s=612x612&w=0&k=20&c=HCdEZEtMtFzQDr9nQ8sF04PCvJ7XAs1ERpgtADCYql8=',
       link: '/shop',
     },
   ];

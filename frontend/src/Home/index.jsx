@@ -68,7 +68,7 @@ const Home = () => {
               <option value="">All Categories</option>
               <option value="Men">Men</option>
               <option value="Women">Women</option>
-              <option value="Moisturizers">Moisturizers</option>
+              <option value="Accesories">Accesories</option>
             </select>
             <select
               value={filters.priceRange}
@@ -97,7 +97,7 @@ const Home = () => {
 
         {/* Featured Categories */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {["Cleansers", "Moisturizers", "Serums"].map((category) => (
+          {["Pants", "Shirts", "Accesories"].map((category) => (
             <div key={category} className={`${theme?.card} ${theme?.border} p-6 rounded-lg shadow-md`}>
               <h3 className="text-xl font-semibold mb-2">{category}</h3>
               <p className="mb-4">Explore our selection of {category.toLowerCase()}</p>
