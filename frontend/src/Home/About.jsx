@@ -1,7 +1,8 @@
 import React from 'react';
 import './styles.css';
+import Header from '../Layout/Header';
 
-export default function OurStory() {
+export default function About() {
   return (
     <main className="our-story-page">
       {/* Hero Section */}
@@ -12,7 +13,6 @@ export default function OurStory() {
             alt="Buck Mason: Our Story" 
             className="hero-image" 
           />
-          <h1 className="hero-title">Our Story</h1>
         </div>
       </section>
 
@@ -21,17 +21,27 @@ export default function OurStory() {
         <div className="content-block image-right">
           <div className="text-column">
             <h2 className="section-heading">
-              Buck Mason makes updated, modern American classics with a commitment to timelessness, quality, and our California roots.
+              Our Story
             </h2>
             <div className="text-content">
               <p>
-                Founded in 2013 in Venice, California, by Sasha Koehn and Erik Allen Ford, we started out of a 350-square-foot garage with locally-made jeans and tees and a simple goal to make clothing that will stand the test of time.
-              </p>
+              It all started with a simple idea shared among three close friends: to create something meaningful and innovative that combines fashion and technology. We noticed a gap in the fashion industry—shopping for clothes often felt impersonal, and finding colors that truly complement one's unique skin tone was a challenge for many.
+
+             </p>
               <p>
-                From the start, we've remained committed to quality craftsmanship, combining old-school manufacturing techniques and modern technology to create wardrobe essentials that make it easy to be the best dressed in the room.
+              Inspired by this, we decided to build a platform that goes beyond just selling clothes. Our mission became clear: to help people discover outfits and accessories that not only fit them but also celebrate their individuality.
               </p>
+
               <p>
-                Each piece in our collection has a little bit of us infused in it; a laidback, effortless style that looks as good as it feels. We call it the spirit of California.
+              What makes us unique is our personalized approach. Using a blend of creativity and technology, we developed a system that suggests clothing and color combinations tailored to each customer’s skin tone. It’s more than just shopping—it’s about empowering you to express yourself with confidence and ease.
+              </p>
+            
+              <p>
+              From late-night brainstorming sessions to turning our vision into reality, this journey has been fueled by passion, teamwork, and a shared dream of redefining the shopping experience. Today, we’re proud to bring you a platform that combines style, innovation, and inclusivity.
+              <p>
+              Welcome to SkinSync—where fashion meets individuality.
+              </p>
+              
               </p>
             </div>
           </div>
@@ -54,13 +64,13 @@ export default function OurStory() {
               alt="Buck Mason HQ, 2023" 
               className="section-image" 
             />
-            <div className="image-caption">Buck Mason HQ, 2023</div>
+            <div className="image-caption">Designer Selection, 2024</div>
           </div>
           <div className="text-column">
             <h2 className="section-heading">Design</h2>
             <div className="text-content">
               <p>
-                Our aim is for our clothing to outlive us. Not just in that it lasts a lifetime but that it will stand the test of time. We've dedicated ourselves to crafting garments that are not only impeccably constructed but also timeless in their design. By deconstructing and refining the clothing Americans have worn for generations, we've created modern, elevated classics that we believe you'll reach for time and again.
+              At SkinSync, design isn’t just about aesthetics—it’s about purpose. We’ve crafted a platform where technology and creativity come together to offer personalized clothing suggestions based on skin tone. Every detail, from our intuitive interface to our carefully curated collections, is designed to make your shopping experience seamless, empowering, and uniquely yours.
               </p>
             </div>
           </div>
@@ -81,13 +91,11 @@ export default function OurStory() {
           <div className="image-column">
             <img 
               src="https://cdn.shopify.com/s/files/1/0123/5065/2473/files/OurProcess.jpg?v=1685482462&format=webp&width=860&height=860" 
-              alt="Manteco Textile Mill, Tuscany" 
+              
               className="section-image" 
             />
             <div className="image-caption">
-              <a href="https://manteco.com/" target="_blank" rel="noreferrer">
-                Manteco Textile Mill, Tuscany
-              </a>
+               
             </div>
           </div>
         </div>
@@ -102,7 +110,7 @@ export default function OurStory() {
           <div className="feature-content">
             <div className="feature-image-container">
               <img 
-                src="/images/knitting-mills.jpg" 
+                src="https://cdn.shopify.com/s/files/1/0123/5065/2473/files/Mohnton_3.jpg?v=1685559144&format=webp&width=700&height=500  " 
                 alt="Buck Mason Knitting Mills" 
                 className="feature-image" 
               />
@@ -111,10 +119,10 @@ export default function OurStory() {
               <div className="overlay-content">
                 <h2 className="feature-title">Buck Mason Knitting Mills</h2>
                 <p className="feature-description">
-                  Continuing the Craftsmanship: Mohnton Knitting Mills becomes Buck Mason Knitting Mills
+                  Inspired Outfits Ideas By Buck Mason Knitting Mills
                 </p>
                 <div className="feature-cta">
-                  <span>Learn More</span>
+                  <a href="https://www.buckmason.com/pages/buck-mason-knitting-mills" target="_blank">Learn More</a>
                 </div>
               </div>
             </div>
@@ -136,13 +144,13 @@ export default function OurStory() {
             </div>
           </div>
           <div className="text-column">
-            <h2 className="section-heading">Come Have a Drink</h2>
+            <h2 className="section-heading">Shop Now</h2>
             <div className="text-content">
               <p>
                 We've got great neighbors, classic clothes, and cold drinks up for grabs whenever you wanna stop by. See you soon.
               </p>
               <p>
-                <a href="/pages/our-stores" className="text-link">
+                <a href="/" className="text-link" target="_blank">
                   <span>Stop on By</span>
                 </a>
               </p>
@@ -157,7 +165,7 @@ export default function OurStory() {
           <h2 className="vision-title">Our Vision</h2>
           <div className="vision-content">
             <p>
-              Everything we create is rooted in the journey of learning, improving, and refining. We work tirelessly to perfect each piece. It's an endless pursuit of crafting garments that are just right.
+            To revolutionize fashion by creating a personalized shopping experience that celebrates individuality, empowers confidence, and makes finding the perfect outfit effortless for everyone.
             </p>
           </div>
         </div>

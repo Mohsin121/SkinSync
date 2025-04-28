@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import "./App.css";
+import About from "./Home/About";
 import NotFound from "./components/NotFound";
 import UserLayout from "./Layout";
 import Home from "./Home";
@@ -95,6 +96,7 @@ function App() {
 
         <Route path="/" element={<UserLayout />}>
           <Route path="" element={<Home />} />
+          <Route path="/About" element={<About />} />
 
           <Route path="products">
             <Route path="" element={<Product />} />
@@ -110,6 +112,7 @@ function App() {
           )}
           <Route path="personalization">
             <Route index element={<SkinToneSuggestion />} />
+            
             <Route
               path="recommendations/:toneId"
               element={<RecommendedProducts />}
