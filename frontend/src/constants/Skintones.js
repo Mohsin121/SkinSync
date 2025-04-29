@@ -1,52 +1,73 @@
 const skinTones = [
-  {
-    id: 'FFDFC4',
-    name: 'Very Light',
-    description: 'Very fair skin that burns easily, rarely tans. Porcelain complexion with visible veins.',
-    hex: '#FFDFC4',
-    undertone: 'Cool/Pink'
+  { 
+    id: 'Light', 
+    name: 'Very Light', 
+    description: 'Very fair skin that burns easily, rarely tans. Porcelain complexion with visible veins.', 
+    hex: '#FFDFC4', 
+    undertone: 'Cool/Pink' 
   },
-  {
-    id: 'F0C8A0',
-    name: 'Light',
-    description: 'Fair skin that burns easily and tans minimally. Light beige with subtle golden tones.',
-    hex: '#F0C8A0',
-    undertone: 'Neutral/Peach'
+  { 
+    id: 'Fair', 
+    name: 'Fair', 
+    description: 'Fair skin with a rosy or peach undertone. Burns easily but may tan slightly.', 
+    hex: '#FFE0CC', 
+    undertone: 'Warm/Peach' 
   },
-  {
-    id: 'D8B094',
-    name: 'Medium Light',
-    description: 'Light olive skin that sometimes burns, tans gradually. Golden beige with warm tones.',
-    hex: '#D8B094',
-    undertone: 'Warm/Golden'
+  { 
+    id: 'MediumFair', 
+    name: 'Medium Fair', 
+    description: 'Light beige skin that tans gradually with minimal burning. Warm or neutral undertones.', 
+    hex: '#FFD1A4', 
+    undertone: 'Neutral/Warm' 
   },
-  {
-    id: 'BB9675',
-    name: 'Medium',
-    description: 'Moderate brown skin that rarely burns, tans easily. Natural tan or light brown complexion.',
-    hex: '#BB9675',
-    undertone: 'Warm/Olive'
+  { 
+    id: 'Medium', 
+    name: 'Medium', 
+    description: 'Beige to light olive skin that tans easily and rarely burns. Often has olive undertones.', 
+    hex: '#FFC28C', 
+    undertone: 'Warm/Olive' 
   },
-  {
-    id: '8E6B56',
-    name: 'Medium Dark',
-    description: 'Rich brown skin that seldom burns, darkly tans. Caramel to chestnut brown complexion.',
-    hex: '#8E6B56',
-    undertone: 'Deep Warm/Golden'
+  { 
+    id: 'Tan', 
+    name: 'Tan', 
+    description: 'Golden or caramel skin tone that tans quickly and rarely burns.', 
+    hex: '#E0A884', 
+    undertone: 'Warm/Golden' 
   },
-  {
-    id: '5F4238',
-    name: 'Dark',
-    description: 'Deep brown skin that very rarely burns, deeply pigmented. Rich chocolate brown complexion.',
-    hex: '#5F4238',
-    undertone: 'Deep Warm'
+  { 
+    id: 'Olive', 
+    name: 'Olive', 
+    description: 'Light brown or olive skin tone with greenish or yellow undertones.', 
+    hex: '#C9A083', 
+    undertone: 'Neutral/Olive' 
   },
-  {
-    id: '3B2219',
-    name: 'Very Dark',
-    description: 'Deepest brown to black skin that never burns, heavily pigmented. Deep ebony complexion.',
-    hex: '#3B2219',
-    undertone: 'Deep Neutral/Cool'
+  { 
+    id: 'MediumDark', 
+    name: 'Medium Dark', 
+    description: 'Rich caramel to deep bronze tones with warm golden undertones.', 
+    hex: '#A0785A', 
+    undertone: 'Warm/Golden' 
+  },
+  { 
+    id: 'Dark', 
+    name: 'Dark', 
+    description: 'Deep brown skin tone with warm or neutral undertones. Tans quickly and rarely burns.', 
+    hex: '#754C24', 
+    undertone: 'Warm/Neutral' 
+  },
+  { 
+    id: 'DeepDark', 
+    name: 'Deep Dark', 
+    description: 'Very deep brown skin tone with neutral or reddish undertones.', 
+    hex: '#4A3126', 
+    undertone: 'Neutral/Red' 
+  },
+  { 
+    id: 'VeryDeep', 
+    name: 'Very Deep', 
+    description: 'Dark ebony or mahogany skin tone with cool, neutral, or warm undertones.', 
+    hex: '#3B241B', 
+    undertone: 'Cool/Neutral/Warm' 
   }
 ];
 

@@ -76,9 +76,9 @@ const Home = () => {
               className={`${theme?.card} ${theme?.border} p-2 rounded-lg`}
             >
               <option value="">All Prices</option>
-              <option value="0-25">$0 - $25</option>
-              <option value="25-50">$25 - $50</option>
-              <option value="50+">$50+</option>
+              <option value="1000-5000">1000Rs - 5000Rs</option>
+              <option value="5000-10000">5000Rs - 10000Rs</option>
+              <option value="10000+">Rs10000+</option>
             </select>
           </div>
         </div>
