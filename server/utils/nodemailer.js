@@ -6,7 +6,7 @@ const {
 } = require("../templates/authTemplates");
 const { smtpAuth } = require("../config");
 
-const SENDER_ADDRESS = `Finance<${smtpAuth.SMTP_USERNAME}>`;
+const SENDER_ADDRESS = `SkinSync<${smtpAuth.SMTP_USERNAME}>`;
 
 const setTransporter = () =>
   nodemailer.createTransport({

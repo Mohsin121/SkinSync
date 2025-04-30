@@ -18,9 +18,9 @@ const ProductsPage = () => {
   // State for filters
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedSubcategory, setSelectedSubcategory] = useState('All');
-  const [priceRange, setPriceRange] = useState(200);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(200);
+  const [priceRange, setPriceRange] = useState(1000);
+  const [minPrice, setMinPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   
   // UI state
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -171,9 +171,9 @@ const ProductsPage = () => {
                   className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-2">
-                  <span className={`text-sm ${theme.subtext}`}>${minPrice}</span>
-                  <span className={`text-sm font-medium`}>${priceRange}</span>
-                  <span className={`text-sm ${theme.subtext}`}>${maxPrice}</span>
+                  <span className={`text-sm ${theme.subtext}`}>Rs{minPrice}</span>
+                  <span className={`text-sm font-medium`}>Rs{priceRange}</span>
+                  <span className={`text-sm ${theme.subtext}`}>Rs{maxPrice}</span>
                 </div>
               </div>
             </div>
@@ -268,7 +268,7 @@ const ProductsPage = () => {
                 )}
               </div>
               <div className={`text-sm ${theme.subtext}`}>
-                Price up to ${priceRange}
+                Price up to Rs{priceRange}
               </div>
             </div>
 
