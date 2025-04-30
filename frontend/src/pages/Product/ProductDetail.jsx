@@ -108,7 +108,7 @@ const ProductDetail = () => {
             <p className={`${theme.subtext} mb-6`}>{product.category}</p>
 
             <div className="flex items-center mb-6">
-              <span className="text-xl font-bold">${product.price}</span>
+              <span className="text-xl font-bold">Rs{product.price}</span>
               <div className="ml-4 flex items-center">
                 {[...Array(averageRating)].map((_, index) => (
                   <Star

@@ -60,7 +60,7 @@ const CartCanvas = ({ isOpen, onClose }) => {
           </div>
           <div className="flex items-center gap-3">
             <span className="font-medium">
-              ${(item?.price * item?.quantity).toFixed(2)}
+              Rs{(item?.price * item?.quantity).toFixed(2)}
             </span>
             <button
               className="text-red-500 hover:text-red-600 transition-colors"

@@ -446,13 +446,13 @@ const OrderDetail = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
-                    ${item.price.toFixed(2)}
+                    Rs{item.price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                     {item.quantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    Rs{(item.price * item.quantity).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -463,7 +463,7 @@ const OrderDetail = () => {
                   Subtotal:
                 </td>
                 <td className="px-6 py-3 text-right text-sm font-medium">
-                  ${(orderDetail.totalPrice - orderDetail.shippingFee).toFixed(2)}
+                  Rs{(orderDetail.totalPrice - orderDetail.shippingFee).toFixed(2)}
                 </td>
               </tr>
               <tr>
@@ -471,7 +471,7 @@ const OrderDetail = () => {
                   Shipping:
                 </td>
                 <td className="px-6 py-3 text-right text-sm font-medium">
-                  ${orderDetail.shippingFee.toFixed(2)}
+                  Rs{orderDetail.shippingFee.toFixed(2)}
                 </td>
               </tr>
               <tr>
@@ -479,7 +479,7 @@ const OrderDetail = () => {
                   Total:
                 </td>
                 <td className="px-6 py-3 text-right text-sm font-bold">
-                  ${orderDetail.totalPrice.toFixed(2)}
+                  Rs{orderDetail.totalPrice.toFixed(2)}
                 </td>
               </tr>
             </tfoot>

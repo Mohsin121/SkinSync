@@ -105,7 +105,7 @@ const OrderSuccess = () => {
             
               <div className="flex justify-between pt-2 border-t border-gray-200 dark:border-gray-700 font-bold">
                 <span>Total</span>
-                <span>${order.totalPrice.toFixed(2)}</span>
+                <span>Rs{order.totalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>

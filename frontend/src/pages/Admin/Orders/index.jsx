@@ -76,7 +76,7 @@ const OrdersList = () => {
               <td className="p-4 text-sm text-gray-600">#{order._id}</td>
               <td className="p-4 text-sm text-gray-900 font-medium">{order.user.fullName}</td>
               <td className="p-4 text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</td>
-              <td className="p-4 text-sm text-gray-600">${order.totalPrice.toFixed(2)}</td>
+              <td className="p-4 text-sm text-gray-600">Rs{order.totalPrice.toFixed(2)}</td>
               <td className="p-4">
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                   {order.status}
