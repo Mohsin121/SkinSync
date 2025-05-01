@@ -89,7 +89,7 @@ const UserOrders = () => {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(order.status)}
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium {getStatusColor(order.status)}`}>
                       {order.status}
                     </span>
                   </div>
@@ -116,14 +116,14 @@ const UserOrders = () => {
                       className="flex justify-between text-gray-600 text-sm"
                     >
                       <span>{item.productName} (x{item.quantity})</span>
-                      <span>${item.price.toFixed(2)}</span>
+                      <span>Rs{item.price.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
                 
                 <div className="mt-3 flex justify-between items-center">
                   <span className="text-gray-700 font-semibold">Total:</span>
-                  <span className="text-gray-900 font-bold">${order.totalPrice.toFixed(2)}</span>
+                  <span className="text-gray-900 font-bold">Rs{order.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
             ))}

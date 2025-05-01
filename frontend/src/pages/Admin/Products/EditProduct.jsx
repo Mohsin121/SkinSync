@@ -224,7 +224,7 @@ const EditProduct = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Price ($)</label>
+              <label className="block text-gray-700 font-semibold mb-2">Price (Rs)</label>
               <input
                 type="number"
                 name="price"

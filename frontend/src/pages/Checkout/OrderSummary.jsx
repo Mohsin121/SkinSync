@@ -28,10 +28,10 @@ const OrderSummary = ({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium truncate">{item.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">${item.price.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Rs{item.price.toFixed(2)}</p>
                 </div>
               </div>
-              <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+              <p className="font-medium">Rs{(item.price * item.quantity).toFixed(2)}</p>
             </div>
           ))}
         </div>
@@ -40,7 +40,7 @@ const OrderSummary = ({
         <div className={`space-y-3 pt-4 border-t ${theme.border}`}>
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>Rs{totalPrice.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600 dark:text-gray-400">Shipping</span>

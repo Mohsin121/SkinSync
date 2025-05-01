@@ -18,9 +18,9 @@ const ProductsPage = () => {
   // State for filters
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedSubcategory, setSelectedSubcategory] = useState('All');
-  const [priceRange, setPriceRange] = useState(200);
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(200);
+  const [priceRange, setPriceRange] = useState(1000);
+  const [minPrice, setMinPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   
   // UI state
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -171,9 +171,9 @@ const ProductsPage = () => {
                   className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between mt-2">
-                  <span className={`text-sm ${theme.subtext}`}>${minPrice}</span>
-                  <span className={`text-sm font-medium`}>${priceRange}</span>
-                  <span className={`text-sm ${theme.subtext}`}>${maxPrice}</span>
+                  <span className={`text-sm ${theme.subtext}`}>Rs{minPrice}</span>
+                  <span className={`text-sm font-medium`}>Rs{priceRange}</span>
+                  <span className={`text-sm ${theme.subtext}`}>Rs{maxPrice}</span>
                 </div>
               </div>
             </div>
@@ -239,7 +239,7 @@ const ProductsPage = () => {
 
                 {/* Mobile Price Range */}
                 <div className="mb-2">
-                  <h3 className="font-medium mb-2">Price: Up to ${priceRange}</h3>
+                  <h3 className="font-medium mb-2">Price: Up to Rs{priceRange}</h3>
                   <input
                     type="range"
                     min={minPrice}
@@ -268,7 +268,7 @@ const ProductsPage = () => {
                 )}
               </div>
               <div className={`text-sm ${theme.subtext}`}>
-                Price up to ${priceRange}
+                Price up to Rs{priceRange}
               </div>
             </div>
 
@@ -327,7 +327,7 @@ const ProductsPage = () => {
                       <h2 className="text-lg font-semibold mb-1">{product.name}</h2>
                       <p className={`${theme.subtext} text-sm mb-3 line-clamp-2`}>{product.description}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
+                        <span className="text-xl font-bold">Rs{product.price.toFixed(2)}</span>
                         <div className="flex gap-2">
                           {/* Add to Cart Button */}
                           <button
@@ -408,7 +408,7 @@ const ProductsPage = () => {
                 <h3 className="text-2xl font-bold mb-2">{quickViewProduct.name}</h3>
                 <p className={`${theme.subtext} mb-6`}>{quickViewProduct.description}</p>
                 <div className="mb-6">
-                  <span className="text-2xl font-bold">${quickViewProduct.price.toFixed(2)}</span>
+                  <span className="text-2xl font-bold">Rs{quickViewProduct.price.toFixed(2)}</span>
                 </div>
                 
                 {/* Action Buttons */}

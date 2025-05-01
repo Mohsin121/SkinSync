@@ -58,7 +58,7 @@ console.log("asdasdasd")
         <p className="text-gray-700">{product.description}</p>
         <p className="mt-3"><strong>Category:</strong> {product.category}</p>
         <p><strong>Subcategory:</strong> {product.subcategory || "N/A"}</p>
-        <p><strong>Price:</strong> ${product.price.toFixed(2)}</p>
+        <p><strong>Price:</strong> Rs{product.price.toFixed(2)}</p>
         <p><strong>Stock:</strong> {product.stock}</p>
 
         <div className="mt-5">

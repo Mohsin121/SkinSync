@@ -41,7 +41,7 @@ const ProductCard = ({ product, variant = "default" }) => {
         )}
         <h3 className="font-bold text-lg truncate pr-2">{product.name}</h3>
         <span className="font-semibold text-emerald-600">
-          ${product.price.toFixed(2)}
+          Rs{product.price.toFixed(2)}
         </span>
       </div>
       {/* <p className={`${theme?.subtext} text-xs italic`}>{product.brand}</p> */}
