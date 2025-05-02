@@ -128,11 +128,11 @@ const CartCanvas = ({ isOpen, onClose }) => {
         <div className={`absolute bottom-0 left-0 right-0 ${theme?.border} border-t p-4 space-y-4 ${theme?.card}`}>
           <div className="flex justify-between items-center">
             <span className="font-medium">Total</span>
-            <span className="text-xl font-semibold">${total.toFixed(2)}</span>
+            <span className="text-xl font-semibold">Rs{total.toFixed(2)}</span>
           </div>
           <button
           onClick={()=> navigate("/checkout")}
-            className={`${theme?.primary} text-white w-full py-3 rounded-lg font-medium transform transition-all duration-200 hover:opacity-90 active:scale-[0.98]`}
+            className={`Rs{theme?.primary} text-white w-full py-3 rounded-lg font-medium transform transition-all duration-200 hover:opacity-90 active:scale-[0.98]`}
           >
             Proceed to Checkout
           </button>
